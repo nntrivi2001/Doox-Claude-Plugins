@@ -49,13 +49,27 @@ Người dùng đưa file kế hoạch `.xlsx` và hỏi tiến độ, hoặc y�
 
 ### 3. Trường dữ liệu cần lấy
 
-13 trường: STT, Danh mục công việc, PIC, Ngày bắt đầu, Ngày kết thúc, ô tick hoàn thành, Hiện trạng
-vấn đề, Vấn đề phát sinh, Phương án xử lý, Ghi chú, Phương án triển khai, Tiêu chuẩn hoàn thành,
-Rủi ro.
+14 trường: STT, Danh mục công việc, PIC, Ngày bắt đầu, Ngày kết thúc, Trạng thái (chữ), ô tick hoàn
+thành, Hiện trạng vấn đề, Vấn đề phát sinh, Phương án xử lý, Ghi chú, Phương án triển khai, Tiêu
+chuẩn hoàn thành, Rủi ro.
 
-Bốn trường bắt buộc: **Danh mục công việc**, **ô tick**, **Ngày kết thúc**, **Ngày bắt đầu**. Không
-tìm thấy một trong bốn thì dừng và hỏi người dùng, không đoán. Ngày bắt đầu nằm trong nhóm bắt buộc
-vì bảng 3 và bảng 5 phân loại bằng chính cột đó — thiếu nó thì hai bảng không xác định được.
+Dữ liệu nằm ở hai sheet, phải ghép lại:
+
+- `KH Bảng 3 - Chi tiết` — Danh mục CV, Phương án triển khai, Tiêu chí hoàn thành, Người phụ trách,
+  Người hỗ trợ, Ngày bắt đầu, Ngày kết thúc, **Trạng thái (chữ)**, Rủi ro, Ghi chú.
+- `KH Kiểm soát tiến độ & sự cố` — Cập nhật hiện trạng, Vấn đề phát sinh, **Trạng thái (ô tick
+  TRUE/FALSE)**, Phương án giải quyết.
+
+Ghép theo `Danh mục CV`. Trên file tham chiếu hai sheet có cùng 109 dòng và khớp 100%. Ghép theo STT
+thì hỏng: STT đánh lại từ đầu ở mỗi section nên trùng nhau.
+
+Năm trường bắt buộc: **Danh mục công việc**, **Trạng thái (chữ)**, **ô tick**, **Ngày kết thúc**,
+**Ngày bắt đầu**. Không tìm thấy một trong năm thì dừng và hỏi người dùng, không đoán. Ngày bắt đầu
+bắt buộc vì bảng 3 và bảng 5 phân loại bằng chính cột đó.
+
+Dòng không có Danh mục CV, hoặc có Danh mục nhưng trống cả hai cột ngày, là dòng tiêu đề nhóm
+(`A`, `1`, `2`…) — không phải đầu việc, loại khỏi mọi bảng và khỏi phép đếm. Trên file tham chiếu:
+109 dòng có Danh mục, trong đó 28 dòng tiêu đề nhóm, còn 81 đầu việc thật.
 
 Model tự khớp cột ở mỗi lần chạy và báo lại đã nhận cột nào (ví dụ `sheet 'KH Bảng 3' cột H = Ngày
 kết thúc`) trước khi xuất báo cáo. Đây là đánh đổi đã cân nhắc: linh hoạt với file lạ, đổi lại cùng
@@ -63,18 +77,28 @@ một file chạy hai lần có thể khớp cột khác nhau — nên phải in
 
 ### 4. Luật phân loại
 
-Ô tick là tín hiệu hoàn thành **duy nhất**. Ngày kết thúc đã qua không có nghĩa là xong.
+**Hoàn thành = ô tick TRUE *và* cột chữ ghi "Hoàn thành".** Một mình ô tick không đủ; ngày kết thúc
+đã qua càng không phải tín hiệu hoàn thành. Mọi việc không thoả cả hai điều kiện đều tính là chưa
+xong.
+
+Cột chữ chỉ nhận ba giá trị: `Chưa triển khai`, `Đang triển khai`, `Hoàn thành`. Bảng 4 chỉ chứa
+`Hoàn thành`; bảng 1, 2, 3, 5 chỉ chứa `Chưa triển khai` và `Đang triển khai`.
 
 Xét lần lượt từ trên xuống; việc đã vào bảng trên không lặp lại ở bảng dưới.
 
 | # | Bảng | Điều kiện | Cột ngày dùng |
 |---|---|---|---|
-| 1 | Đầu việc quá deadline | chưa tick + Ngày kết thúc < hôm nay | Ngày kết thúc |
-| 2 | Các đầu việc gần deadline | chưa tick + hôm nay ≤ Ngày kết thúc ≤ hôm nay+3 | Ngày kết thúc |
-| 3 | Các đầu việc đang trong quá trình triển khai | chưa tick + Ngày bắt đầu ≤ hôm nay + chưa vào bảng 1/2 | Ngày bắt đầu |
-| 4 | Các công việc đã hoàn thành | có tick | Ngày kết thúc |
-| 5 | Các công việc sắp tới | chưa tick + hôm nay+1 ≤ Ngày bắt đầu ≤ hôm nay+3 + chưa vào bảng 1/2 | Ngày bắt đầu |
+| 1 | Đầu việc quá deadline | chưa xong + Ngày kết thúc < hôm nay | Ngày kết thúc |
+| 2 | Các đầu việc gần deadline | chưa xong + hôm nay ≤ Ngày kết thúc ≤ hôm nay+3 | Ngày kết thúc |
+| 3 | Các đầu việc đang trong quá trình triển khai | chưa xong + Ngày bắt đầu ≤ hôm nay + chưa vào bảng 1/2 | Ngày bắt đầu |
+| 4 | Các công việc đã hoàn thành | tick TRUE **và** chữ `Hoàn thành` | Ngày kết thúc |
+| 5 | Các công việc sắp tới | chưa xong + hôm nay+1 ≤ Ngày bắt đầu ≤ hôm nay+3 + chưa vào bảng 1/2 | Ngày bắt đầu |
 | — | Chưa bắt đầu | phần còn lại: Ngày bắt đầu xa hơn 3 ngày, hoặc không có ngày | không có bảng, chỉ đếm |
+
+**Danh sách lệch trạng thái.** Việc có tick TRUE nhưng chữ không phải `Hoàn thành` (và ngược lại)
+tính là chưa xong, vẫn xếp vào bảng 1/2/3/5 theo ngày, đồng thời liệt kê riêng ở cuối báo cáo —
+Danh mục công việc, giá trị hai cột trạng thái — để người dùng sửa file. Trên file tham chiếu có 9
+dòng như vậy, đều là tick TRUE + chữ `Đang triển khai`.
 
 Ngưỡng 3 ngày lấy từ `idea.txt` dòng 7 (`ngày hoàn thành - 3 ngày`).
 
@@ -115,16 +139,20 @@ Tiêu đề mục, đúng chữ của mẫu gốc:
 4. Các công việc đã hoàn thành
 5. Các công việc sắp tới
 
+Sau bảng 5: danh sách lệch trạng thái, nếu có.
+
 Dòng cuối báo cáo: `tổng = b1 + b2 + b3 + b4 + b5 + chưa bắt đầu`.
 
 ## Kiểm thử
 
 Chạy trên `HerioGreen-Vietnam.xlsx` (thị trường Vietnam):
 
-1. Tổng ở dòng đối chiếu khớp số đầu việc thật đếm được trong file.
+1. Tổng ở dòng đối chiếu bằng 81 — số đầu việc thật, sau khi loại 28 dòng tiêu đề nhóm.
 2. Sáu nhóm cộng lại đúng bằng tổng, không có việc nào nằm ở hai bảng.
-3. Soi tay 2–3 dòng mỗi bảng: nội dung ô khớp file gốc, không bị cắt.
-4. Bảng rỗng vẫn in ra tiêu đề cột.
+3. Bảng 4 có đúng 3 dòng: chỉ những việc vừa tick TRUE vừa ghi chữ `Hoàn thành`.
+4. Danh sách lệch trạng thái có đúng 9 dòng.
+5. Soi tay 2–3 dòng mỗi bảng: nội dung ô khớp file gốc, không bị cắt.
+6. Bảng rỗng vẫn in ra tiêu đề cột.
 
 ## Điều đã bỏ có chủ ý
 
