@@ -161,8 +161,8 @@ Chạy trên `HerioGreen-Vietnam.xlsx` (thị trường Vietnam):
 
 ## Điều đã bỏ có chủ ý
 
-- **Mục "yêu cầu chất lượng đầu ra"** — người dùng chốt bỏ. Rủi ro đã nêu: đây chính là mục vá lỗi
-  cũ (tóm tắt thành văn xuôi, cắt bớt dòng), bỏ đi thì có thể tái phát. Nếu tái phát thì thêm lại
-  mục này là cách sửa.
+- **Mục "yêu cầu chất lượng đầu ra"** — bỏ ở bản đầu, **đã thêm lại vào mục 5** ngày 06/08 sau khi
+  chạy thử: skill xuất ra file `.docx` kèm một đoạn tóm tắt số đếm, đúng lỗi cũ. Nay mục 5 nói rõ
+  báo cáo chính là tin nhắn, cấm sinh file, cấm tóm tắt thay bảng, dài thì chia nhiều tin nhắn.
 - **Mục "gợi ý cách làm"** và **mục "ranh giới"** — người dùng chốt bỏ.
 - Lưu trữ theo thị trường, gửi mail, ghi ngược vào file kế hoạch: ngoài phạm vi v0.

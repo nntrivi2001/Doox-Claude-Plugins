@@ -73,6 +73,24 @@ reverse, counts as not done and still lands in table 1/2/3/5 by its dates. Flag 
 
 ## 5. Output
 
+**The report is the chat reply itself.** Produce no `.docx`, `.md`, `.pdf`, `.xlsx` or any other
+file, and do not offer to. A file attachment is not a delivery of this report; it is a way of not
+delivering it.
+
+**Print every table in full, as Markdown, in the reply.** All five sections, every row of every
+section, every column in the order given below, each cell carried whole. `Phương án triển khai` and
+`Tiêu chuẩn hoàn thành` run to several hundred characters with numbered sub-steps — carry them
+whole, only collapsing newlines inside a cell so the Markdown row stays valid. An empty cell prints
+as `-`. An empty section still prints its header row plus `_(không có)_`.
+
+A prose recap of the counts is not the report. `"Quá deadline: 4, Đang triển khai: 14"` states the
+numbers correctly and still fails, because it drops `Phương án triển khai`, `Tiêu chuẩn hoàn thành`,
+`Rủi ro` and `Hiện trạng` — exactly the columns the PM acts on.
+
+The report runs long on a real market: reading the file in slices and printing the tables in
+consecutive messages marked `(tiếp)` is fine. Shortening is not. Never cut rows, never cut cells,
+never replace a table with a sentence, never point at a file instead.
+
 Opening lines, verbatim:
 
 ```
