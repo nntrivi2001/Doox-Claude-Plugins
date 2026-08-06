@@ -1,81 +1,86 @@
 ---
 name: progress-report
-description: Đọc file kế hoạch dự án (.xlsx) của một thị trường và xuất báo cáo tiến độ theo mẫu khách — quá deadline, gần deadline, đang triển khai, đã hoàn thành, sắp tới. Dùng khi người dùng đưa file kế hoạch, hỏi tiến độ dự án, hỏi việc nào quá hạn hay sắp tới, hoặc yêu cầu báo cáo tiến độ cho một thị trường.
+description: Read a market's project plan (.xlsx) and produce the progress report in the customer's template — overdue, near deadline, in progress, done, starting soon. Use when the user hands over a plan file, asks how a project is doing, asks what is overdue or coming up, or asks for a progress report for a market.
 ---
 
-# Báo cáo tiến độ dự án
+# Progress report
 
-## 1. Dùng khi nào
+## 1. When to use
 
-Người dùng đưa file kế hoạch `.xlsx` và hỏi tiến độ, hoặc yêu cầu báo cáo tiến độ cho một thị trường.
+The user hands over a plan file (`.xlsx`) and asks about progress, or asks for a progress report for
+one market.
 
-## 2. Đầu vào
+## 2. Input
 
-- File kế hoạch `.xlsx`.
-- Tên thị trường. Hỏi người dùng, không suy từ tên file — suy sai thì báo cáo mang tên thị trường sai.
+- The plan file, `.xlsx`.
+- The market name. Ask the user for it — never infer it from the filename, or the report goes out
+  under the wrong market.
 
-## 3. Trường dữ liệu cần lấy
+## 3. Fields to collect
 
-14 trường: STT, Danh mục công việc, PIC, Ngày bắt đầu, Ngày kết thúc, Trạng thái (chữ), ô tick hoàn
-thành, Hiện trạng vấn đề, Vấn đề phát sinh, Phương án xử lý, Ghi chú, Phương án triển khai, Tiêu
-chuẩn hoàn thành, Rủi ro.
+Fourteen: STT, Danh mục công việc, PIC, Ngày bắt đầu, Ngày kết thúc, Trạng thái (text), the
+completion checkbox, Hiện trạng vấn đề, Vấn đề phát sinh, Phương án xử lý, Ghi chú, Phương án triển
+khai, Tiêu chuẩn hoàn thành, Rủi ro.
 
-Dữ liệu nằm ở hai sheet, phải ghép lại:
+They live in two sheets and have to be joined:
 
-- Sheet chi tiết kế hoạch — Danh mục CV, Phương án triển khai, Tiêu chí hoàn thành, Người phụ trách,
-  Người hỗ trợ, Ngày bắt đầu, Ngày kết thúc, **Trạng thái (chữ)**, Rủi ro, Ghi chú.
-- Sheet kiểm soát tiến độ & sự cố — Cập nhật hiện trạng, Vấn đề phát sinh, **Trạng thái (ô tick
-  TRUE/FALSE)**, Phương án giải quyết.
+- The plan detail sheet — Danh mục CV, Phương án triển khai, Tiêu chí hoàn thành, Người phụ trách,
+  Người hỗ trợ, Ngày bắt đầu, Ngày kết thúc, **Trạng thái (text)**, Rủi ro, Ghi chú.
+- The control sheet — Cập nhật hiện trạng, Vấn đề phát sinh, **Trạng thái (checkbox TRUE/FALSE)**,
+  Phương án giải quyết.
 
-Ghép hai sheet theo **Danh mục CV**, không theo STT: STT đánh lại từ đầu ở mỗi section nên trùng nhau.
+Join on **Danh mục CV**, not on STT: STT restarts at every section, so the same number appears many
+times.
 
-Năm cột bắt buộc: **Danh mục công việc**, **Trạng thái (chữ)**, **ô tick**, **Ngày bắt đầu**,
-**Ngày kết thúc**. Thiếu một trong năm thì dừng và hỏi người dùng, không đoán.
+Five required columns: **Danh mục công việc**, **Trạng thái (text)**, the **checkbox**, **Ngày bắt
+đầu**, **Ngày kết thúc**. If any one of them is missing, stop and ask the user — do not guess.
 
-Báo lại đã nhận cột nào trước khi xuất báo cáo, ví dụ `sheet 'KH Bảng 3 - Chi tiết' cột J = Ngày kết
-thúc`.
+Report which columns were matched before printing anything, e.g. `sheet 'KH Bảng 3 - Chi tiết' cột
+J = Ngày kết thúc`.
 
-Dòng không có Danh mục CV, hoặc có Danh mục nhưng trống cả hai cột ngày, là dòng tiêu đề nhóm
-(`A`, `1`, `2`…). Không phải đầu việc — loại khỏi mọi bảng và khỏi phép đếm.
+A row with no Danh mục CV, or with a Danh mục but both date cells empty, is a section heading
+(`A`, `1`, `2`…). It is not a task: drop it from every table and from the counts.
 
-## 4. Luật phân loại
+## 4. Classification
 
-**Hoàn thành = ô tick TRUE *và* cột chữ ghi `Hoàn thành`.** Một mình ô tick không đủ. Ngày kết thúc
-đã qua càng không phải tín hiệu hoàn thành. Mọi việc không thoả cả hai điều kiện đều tính là chưa
-xong.
+**Done = the checkbox is TRUE *and* the text column reads `Hoàn thành`.** The checkbox alone is not
+enough, and a past end date is not a completion signal at all. Anything failing either condition
+counts as not done.
 
-Cột chữ nhận ba giá trị: `Chưa triển khai`, `Đang triển khai`, `Hoàn thành`. Bảng 4 chỉ chứa
-`Hoàn thành`; bảng 1, 2, 3, 5 chỉ chứa `Chưa triển khai` và `Đang triển khai`.
+The text column holds three values: `Chưa triển khai`, `Đang triển khai`, `Hoàn thành`. Table 4 holds
+only `Hoàn thành`; tables 1, 2, 3 and 5 hold only `Chưa triển khai` and `Đang triển khai`.
 
-Xét lần lượt từ trên xuống. Việc đã vào bảng trên thì không lặp lại ở bảng dưới.
+Test in order, top to bottom. A task placed in an earlier table never reappears in a later one.
 
-| # | Bảng | Điều kiện | Cột ngày |
+| # | Table | Condition | Date column |
 |---|---|---|---|
-| 1 | Đầu việc quá deadline | chưa xong + Ngày kết thúc < hôm nay | Ngày kết thúc |
-| 2 | Các đầu việc gần deadline | chưa xong + hôm nay ≤ Ngày kết thúc ≤ hôm nay+3 | Ngày kết thúc |
-| 3 | Các đầu việc đang trong quá trình triển khai | chưa xong + Ngày bắt đầu ≤ hôm nay + chưa vào bảng 1/2 | Ngày bắt đầu |
-| 4 | Các công việc đã hoàn thành | tick TRUE **và** chữ `Hoàn thành` | Ngày kết thúc |
-| 5 | Các công việc sắp tới | chưa xong + hôm nay+1 ≤ Ngày bắt đầu ≤ hôm nay+3 + chưa vào bảng 1/2 | Ngày bắt đầu |
-| — | Chưa bắt đầu | phần còn lại: Ngày bắt đầu xa hơn 3 ngày, hoặc không có ngày | không có bảng, chỉ đếm |
+| 1 | Đầu việc quá deadline | not done + Ngày kết thúc < today | Ngày kết thúc |
+| 2 | Các đầu việc gần deadline | not done + today ≤ Ngày kết thúc ≤ today+3 | Ngày kết thúc |
+| 3 | Các đầu việc đang trong quá trình triển khai | not done + Ngày bắt đầu ≤ today + not already in 1/2 | Ngày bắt đầu |
+| 4 | Các công việc đã hoàn thành | checkbox TRUE **and** text `Hoàn thành` | Ngày kết thúc |
+| 5 | Các công việc sắp tới | not done + today+1 ≤ Ngày bắt đầu ≤ today+3 + not already in 1/2 | Ngày bắt đầu |
+| — | Chưa bắt đầu | everything left: Ngày bắt đầu further than 3 days out, or no dates | no table, counted only |
 
-Việc vừa gần deadline vừa sắp bắt đầu nằm ở bảng 2 — gấp hơn.
+A task that is both near its deadline and about to start belongs in table 2 — that one is more
+urgent.
 
-**Lệch trạng thái.** Việc có tick TRUE nhưng chữ không phải `Hoàn thành`, hoặc ngược lại, tính là
-chưa xong và vẫn xếp vào bảng 1/2/3/5 theo ngày. Đánh dấu ở hai nơi:
+**Status conflicts.** A task whose checkbox is TRUE while the text column is not `Hoàn thành`, or the
+reverse, counts as not done and still lands in table 1/2/3/5 by its dates. Flag it twice:
 
-- Trong chính dòng đó, ô `Ghi chú` thêm `[đã tick, cột chữ chưa cập nhật]` vào cuối nội dung sẵn có.
-- Liệt kê riêng sau bảng 5: Danh mục công việc + giá trị hai cột trạng thái, để người dùng sửa file.
+- In its own row, append `[đã tick, cột chữ chưa cập nhật]` to whatever `Ghi chú` already holds.
+- List it again after table 5: Danh mục công việc plus both status values, so the user can fix the
+  file.
 
-## 5. Mẫu output
+## 5. Output
 
-Hai dòng mở đầu:
+Opening lines, verbatim:
 
 ```
 Báo cáo tiến độ dự án:
 Cập nhật tiến độ dự án tại thị trường [Tên thị trường] dựa theo cập nhật mới nhất:
 ```
 
-Rồi năm mục, đúng tiêu đề này, kèm số dòng của mục:
+Then five sections under exactly these headings, each with its row count:
 
 1. Đầu việc quá deadline
 2. Các đầu việc gần deadline
@@ -83,18 +88,19 @@ Rồi năm mục, đúng tiêu đề này, kèm số dòng của mục:
 4. Các công việc đã hoàn thành
 5. Các công việc sắp tới
 
-Bảng 1, 2, 3, 5 — 11 cột:
+Tables 1, 2, 3, 5 — eleven columns:
 
 | STT | Danh mục công việc | PIC | Ngày kết thúc | Hiện trạng vấn đề | Vấn đề phát sinh | Phương án xử lý | Ghi chú | Phương án triển khai | Tiêu chuẩn hoàn thành | Rủi ro |
 |---|---|---|---|---|---|---|---|---|---|---|
 
-Bảng 3 và bảng 5 thay `Ngày kết thúc` bằng `Ngày bắt đầu`. Các cột khác giữ nguyên thứ tự.
+Tables 3 and 5 swap `Ngày kết thúc` for `Ngày bắt đầu`. Every other column keeps its place.
 
-Bảng 4 — 7 cột:
+Table 4 — seven columns:
 
 | STT | Danh mục công việc | PIC | Ngày kết thúc | Ghi chú | Phương án triển khai | Tiêu chuẩn hoàn thành |
 |---|---|---|---|---|---|---|
 
-Sau bảng 5: danh sách lệch trạng thái, nếu có.
+After table 5: the status-conflict list, if there is one.
 
-Dòng cuối: `tổng = b1 + b2 + b3 + b4 + b5 + chưa bắt đầu`. Không khớp thì báo lỗi thay vì xuất bản.
+Last line: `tổng = b1 + b2 + b3 + b4 + b5 + chưa bắt đầu`. If the numbers do not add up, report the
+discrepancy instead of publishing the report.
