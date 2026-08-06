@@ -60,8 +60,19 @@ Dữ liệu nằm ở hai sheet, phải ghép lại:
 - `KH Kiểm soát tiến độ & sự cố` — Cập nhật hiện trạng, Vấn đề phát sinh, **Trạng thái (ô tick
   TRUE/FALSE)**, Phương án giải quyết.
 
-Ghép theo `Danh mục CV`. Trên file tham chiếu hai sheet có cùng 109 dòng và khớp 100%. Ghép theo STT
-thì hỏng: STT đánh lại từ đầu ở mỗi section nên trùng nhau.
+Ghép **theo vị trí dòng**: dòng thứ n của sheet chi tiết là dòng thứ n của sheet kiểm soát. Hai khoá
+kia đều hỏng trên file thật — STT đánh lại từ đầu mỗi section, còn `Danh mục CV` trùng lặp (4 nhãn
+phủ 14 dòng, ví dụ `Nghiệm thu giấy phép` xuất hiện 4 lần), ghép theo nhãn là gộp nhầm 4 đầu việc
+khác nhau làm một. Trước khi ghép, kiểm hai sheet cùng số dòng và `Danh mục CV` khớp từng dòng;
+lệch thì dừng và báo.
+
+STT hiển thị là **ghép**, không phải chép: lấy ký hiệu section gần nhất phía trên (`A`, `B`, `I`,
+`II`… — chỉ chữ cái và số La Mã, tiêu đề thuần số là nhóm con) cộng số thứ tự của dòng, ra `II.3.1`.
+Không có tiền tố thì `3.1` lặp lại nhiều lần, không định danh được dòng nào.
+
+Nguồn từng cột phải ghi rõ trong skill: hai sheet cùng có `Ngày bắt đầu`, `Ngày kết thúc`,
+`Trạng thái`, `Ghi chú` trùng tên. `Hiện trạng vấn đề`, `Vấn đề phát sinh`, `Phương án xử lý` và
+`Ghi chú` lấy ở sheet kiểm soát; phần còn lại lấy ở sheet chi tiết.
 
 Năm trường bắt buộc: **Danh mục công việc**, **Trạng thái (chữ)**, **ô tick**, **Ngày kết thúc**,
 **Ngày bắt đầu**. Không tìm thấy một trong năm thì dừng và hỏi người dùng, không đoán. Ngày bắt đầu

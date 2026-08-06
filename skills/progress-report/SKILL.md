@@ -29,8 +29,14 @@ They live in two sheets and have to be joined:
 - The control sheet — Cập nhật hiện trạng, Vấn đề phát sinh, **Trạng thái (checkbox TRUE/FALSE)**,
   Phương án giải quyết.
 
-Join on **Danh mục CV**, not on STT: STT restarts at every section, so the same number appears many
-times.
+**Join the two sheets by row position** — row *n* of the detail sheet is row *n* of the control
+sheet. Both other keys are broken on real files: STT restarts at every section, and `Danh mục CV`
+repeats (on the reference file 4 labels cover 14 rows, e.g. `Nghiệm thu giấy phép` appears 4 times,
+so joining by label silently merges four different tasks into one).
+
+Before joining, check the two sheets have the same row count and that `Danh mục CV` matches row by
+row. If they diverge, stop and report it — a shifted join produces a report that looks fine and is
+wrong throughout.
 
 Five required columns: **Danh mục công việc**, **Trạng thái (text)**, the **checkbox**, **Ngày bắt
 đầu**, **Ngày kết thúc**. If any one of them is missing, stop and ask the user — do not guess.
@@ -40,6 +46,32 @@ J = Ngày kết thúc`.
 
 A row with no Danh mục CV, or with a Danh mục but both date cells empty, is a section heading
 (`A`, `1`, `2`…). It is not a task: drop it from every table and from the counts.
+
+**Where each report column comes from.** The two sheets both carry `Ngày bắt đầu`, `Ngày kết thúc`,
+`Trạng thái` and `Ghi chú` under the same name — take each from the sheet named here, not from
+whichever one is found first:
+
+| Report column | Sheet | Source column |
+|---|---|---|
+| STT | detail | see below |
+| Danh mục công việc | detail | `Danh mục CV` |
+| PIC | detail | `Người phụ trách` |
+| Ngày bắt đầu / Ngày kết thúc | detail | same names |
+| Phương án triển khai | detail | `Phương án triển khai` |
+| Tiêu chuẩn hoàn thành | detail | `Tiêu chí hoàn thành/ bằng chứng xác nhận` |
+| Rủi ro | detail | `Rủi ro` |
+| Trạng thái (text) | detail | `Trạng thái` |
+| Hiện trạng vấn đề | control | `Cập nhật hiện trạng` |
+| Vấn đề phát sinh | control | `Vấn đề phát sinh` |
+| Phương án xử lý | control | `Phương án giải quyết` |
+| Ghi chú | control | `Ghi chú` |
+| checkbox | control | `Trạng thái` |
+
+**STT is built, not copied.** The numbering sits in several columns — a section marker (`A`, `B`,
+`I`, `II`…), then level-2 numbers (`3.1`), then level-3 (`5.1.2`). Print the nearest section marker
+above the row, a dot, then the row's own number: `II` + `3.1` = `II.3.1`. Only letters and Roman
+numerals are section markers; a purely numeric heading (`1`, `2`, `3`) is a sub-group, not a section.
+Without the prefix, `3.1` appears many times over and no row can be identified.
 
 ## 4. Classification
 
@@ -117,6 +149,17 @@ Tables 1, 2, 3, 5 — eleven columns:
 |---|---|---|---|---|---|---|---|---|---|---|
 
 Tables 3 and 5 swap `Ngày kết thúc` for `Ngày bắt đầu`. Every other column keeps its place.
+
+Dates print as `dd/mm/yyyy`. One real row, to fix the level of detail expected:
+
+```
+| II.3.1 | Chuẩn bị hồ sơ & đầu mối nộp hồ sơ | Doox4 | 21/08/2026 | - | - | - | - | 1. Nhận checklist chính thức từ … | Có checklist được tư vấn xác nhận … | Dùng checklist không cập nhật. |
+```
+
+`Hiện trạng vấn đề`, `Vấn đề phát sinh`, `Phương án xử lý` and `Ghi chú` come from the control
+sheet and are empty on most rows — print `-`, never leave the cell out and never invent content.
+`Phương án triển khai`, `Tiêu chuẩn hoàn thành` and `Rủi ro` are almost always filled and are the
+long ones: print them whole.
 
 Table 4 — seven columns:
 
