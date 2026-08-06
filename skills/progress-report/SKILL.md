@@ -13,8 +13,10 @@ one market.
 ## 2. Input
 
 - The plan file, `.xlsx`.
-- The market name. Ask the user for it — never infer it from the filename, or the report goes out
-  under the wrong market.
+- The market name and the project name. They come from the filename, which follows
+  `[Thị trường] - [Tên dự án].xlsx` — use the `plan-file-naming` skill to read them, and show what
+  was read before printing the report. If the filename does not follow the convention, that skill
+  says to ask the user; do that rather than guessing, or the report goes out under the wrong market.
 
 ## 3. Fields to collect
 
