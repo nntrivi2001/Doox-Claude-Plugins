@@ -1,8 +1,9 @@
 {
   "name": "doox",
   "version": "0.1.0",
-  "description": "Trợ lý dự án Doox: đọc bảng kế hoạch của một thị trường và xuất báo cáo tiến độ theo mẫu.",
+  "description": "Trợ lý dự án: đọc bảng kế hoạch, nhắc việc theo hạn, báo cáo tiến độ, lưu trữ & đúc kết, phân loại sự cố, dự báo tiến độ; duyệt báo giá và hồ sơ năng lực nhà thầu; nghiên cứu thị trường.",
   "author": {
-    "name": "Doox"
+    "name": "Nguyễn Ngọc Trí Vĩ",
+    "email": "nntrivi2001@gmail.com"
   }
 }
