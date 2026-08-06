@@ -98,13 +98,18 @@ Báo cáo tiến độ dự án:
 Cập nhật tiến độ dự án tại thị trường [Tên thị trường] dựa theo cập nhật mới nhất:
 ```
 
-Then five sections under exactly these headings, each with its row count:
+Then five sections, each heading written exactly like this — number, label, colon, row count in
+brackets, then the table:
 
-1. Đầu việc quá deadline
-2. Các đầu việc gần deadline
-3. Các đầu việc đang trong quá trình triển khai
-4. Các công việc đã hoàn thành
-5. Các công việc sắp tới
+```
+1. Đầu việc quá deadline: (4)
+2. Các đầu việc gần deadline: (1)
+3. Các đầu việc đang trong quá trình triển khai: (14)
+4. Các công việc đã hoàn thành: (3)
+5. Các công việc sắp tới: (1)
+```
+
+Do not rename, reorder, merge or drop a section, and do not add one.
 
 Tables 1, 2, 3, 5 — eleven columns:
 
