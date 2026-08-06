@@ -1,7 +1,7 @@
 {
   "name": "doox",
-  "version": "0.0.0",
-  "description": "Trợ lý dự án Doox — đang xây lại từ đầu.",
+  "version": "0.1.0",
+  "description": "Trợ lý dự án Doox: đọc bảng kế hoạch của một thị trường và xuất báo cáo tiến độ theo mẫu.",
   "author": {
     "name": "Doox"
   }

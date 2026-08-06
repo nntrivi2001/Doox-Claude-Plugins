@@ -32,15 +32,8 @@ Skill mô tả **kết quả phải ra**, không mô tả các bước. Model t�
 (Claude không đọc `.xlsx` bằng `Read`; `openpyxl` và `pandas` có sẵn trên máy, `libreoffice` cũng
 có). Skill không ràng buộc cách làm, không kèm script.
 
-Ngôn ngữ: **phần diễn giải của SKILL.md viết tiếng Anh** — mô tả, hướng dẫn, điều kiện, chú thích.
-
-Nhưng mọi chuỗi sẽ hiển thị cho người đọc báo cáo thì giữ nguyên tiếng Việt, verbatim, không dịch:
-tên sheet và tên cột trong file kế hoạch (`KH Bảng 3 - Chi tiết`, `Danh mục CV`, `Ngày kết thúc`…),
-ba giá trị của cột trạng thái (`Chưa triển khai`, `Đang triển khai`, `Hoàn thành`), tiêu đề 5 mục
-báo cáo, nhãn 11 cột của bảng, hai dòng mở đầu, và dấu `[đã tick, cột chữ chưa cập nhật]`.
-
-Báo cáo xuất ra vẫn hoàn toàn tiếng Việt — người nhận là PM và PIC. Skill viết tiếng Anh, thứ nó
-tạo ra thì không.
+Ngôn ngữ: nội dung SKILL.md viết tiếng Việt. Mọi nhãn cột, tên bảng và mẫu văn bản đều tiếng Việt;
+viết skill bằng tiếng Anh chỉ tạo thêm một lần dịch có thể sai nhãn.
 
 ## Cấu trúc SKILL.md — 5 mục
 
