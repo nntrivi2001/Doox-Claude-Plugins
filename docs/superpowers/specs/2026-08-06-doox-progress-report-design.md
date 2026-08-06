@@ -95,10 +95,15 @@ Xét lần lượt từ trên xuống; việc đã vào bảng trên không lặ
 | 5 | Các công việc sắp tới | chưa xong + hôm nay+1 ≤ Ngày bắt đầu ≤ hôm nay+3 + chưa vào bảng 1/2 | Ngày bắt đầu |
 | — | Chưa bắt đầu | phần còn lại: Ngày bắt đầu xa hơn 3 ngày, hoặc không có ngày | không có bảng, chỉ đếm |
 
-**Danh sách lệch trạng thái.** Việc có tick TRUE nhưng chữ không phải `Hoàn thành` (và ngược lại)
-tính là chưa xong, vẫn xếp vào bảng 1/2/3/5 theo ngày, đồng thời liệt kê riêng ở cuối báo cáo —
-Danh mục công việc, giá trị hai cột trạng thái — để người dùng sửa file. Trên file tham chiếu có 9
-dòng như vậy, đều là tick TRUE + chữ `Đang triển khai`.
+**Lệch trạng thái.** Việc có tick TRUE nhưng chữ không phải `Hoàn thành` (và ngược lại) tính là chưa
+xong, vẫn xếp vào bảng 1/2/3/5 theo ngày. Đánh dấu ở hai nơi:
+
+- Ngay trong dòng của nó, ô `Ghi chú` thêm `[đã tick, cột chữ chưa cập nhật]` vào cuối nội dung sẵn
+  có. Không có dấu này thì người đọc bảng 1 không phân biệt được việc chậm thật với việc chỉ quên
+  đổi cột chữ — mà bảng 1 là bảng người ta đọc kỹ nhất.
+- Liệt kê riêng ở cuối báo cáo: Danh mục công việc + giá trị hai cột trạng thái, để sửa file.
+
+Trên file tham chiếu có 9 dòng như vậy, đều là tick TRUE + chữ `Đang triển khai`.
 
 Ngưỡng 3 ngày lấy từ `idea.txt` dòng 7 (`ngày hoàn thành - 3 ngày`).
 
