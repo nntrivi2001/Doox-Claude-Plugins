@@ -33,6 +33,30 @@ them through exactly as written, do not "correct" `Bo Bien Nga` into `Bờ Biể
 
 Ignore Excel lock files: `~$…` and `.~lock.…#`.
 
+## The project README
+
+The Cowork project folder — the one holding the plan files — carries a `README.md` describing what
+is in it. **Read it before doing anything else**, and update it whenever the run turned up something
+it does not yet say.
+
+It holds what cannot be re-derived by looking at the files: which markets and projects are live and
+which file each lives in, naming conventions in use, quirks of the customer's template found the
+hard way, and decisions the user has settled. Not a changelog, not a run history, not a copy of the
+data — a picture of the current state that a new session can be handed.
+
+Update it when a run reveals:
+
+- a new plan file, a renamed one, a new market or project;
+- something about the data worth not rediscovering — a duplicated label, a status column that
+  disagrees with a checkbox, a sheet that changed shape;
+- a convention or rule the user has just settled.
+
+Rewrite the affected lines rather than appending; a README that only grows stops being read. If the
+folder has no `README.md`, create it.
+
+This is the one file a Doox skill writes to. Plan files are read-only — several people co-author
+them on SharePoint, and writing to one destroys someone else's edit.
+
 ## When a file does not match a convention
 
 Ask the user. Never guess a market from a filename with no separator, and never fall back to the
