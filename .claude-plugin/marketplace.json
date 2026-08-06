@@ -1,0 +1,13 @@
+{
+  "name": "doox",
+  "owner": {
+    "name": "Doox"
+  },
+  "plugins": [
+    {
+      "name": "doox",
+      "source": "./",
+      "description": "Trợ lý dự án: đọc bảng kế hoạch, nhắc việc theo hạn, báo cáo tiến độ, lưu trữ & đúc kết, phân loại sự cố, dự báo tiến độ; duyệt báo giá và hồ sơ năng lực nhà thầu; nghiên cứu thị trường."
+    }
+  ]
+}
