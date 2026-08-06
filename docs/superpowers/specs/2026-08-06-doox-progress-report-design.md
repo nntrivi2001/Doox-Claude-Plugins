@@ -53,8 +53,9 @@ Người dùng đưa file kế hoạch `.xlsx` và hỏi tiến độ, hoặc y�
 vấn đề, Vấn đề phát sinh, Phương án xử lý, Ghi chú, Phương án triển khai, Tiêu chuẩn hoàn thành,
 Rủi ro.
 
-Ba trường bắt buộc: **Danh mục công việc**, **ô tick**, **Ngày kết thúc**. Không tìm thấy một trong
-ba thì dừng và hỏi người dùng, không đoán.
+Bốn trường bắt buộc: **Danh mục công việc**, **ô tick**, **Ngày kết thúc**, **Ngày bắt đầu**. Không
+tìm thấy một trong bốn thì dừng và hỏi người dùng, không đoán. Ngày bắt đầu nằm trong nhóm bắt buộc
+vì bảng 3 và bảng 5 phân loại bằng chính cột đó — thiếu nó thì hai bảng không xác định được.
 
 Model tự khớp cột ở mỗi lần chạy và báo lại đã nhận cột nào (ví dụ `sheet 'KH Bảng 3' cột H = Ngày
 kết thúc`) trước khi xuất báo cáo. Đây là đánh đổi đã cân nhắc: linh hoạt với file lạ, đổi lại cùng
