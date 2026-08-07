@@ -75,6 +75,9 @@ above the row, a dot, then the row's own number: `II` + `3.1` = `II.3.1`. Only l
 numerals are section markers; a purely numeric heading (`1`, `2`, `3`) is a sub-group, not a section.
 Without the prefix, `3.1` appears many times over and no row can be identified.
 
+Some level-3 numbers are typed with commas instead of dots — `3,1,1` where `3.1.1` was meant (8 of 28
+on the reference file). Normalise commas to dots, so the printed STT reads `II.3.1.1`.
+
 ## 4. Classification
 
 **Done = the checkbox is TRUE *and* the text column reads `Hoàn thành`.** The checkbox alone is not
