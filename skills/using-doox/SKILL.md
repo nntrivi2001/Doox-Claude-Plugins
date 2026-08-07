@@ -14,7 +14,7 @@ belongs here.
 |---|---|---|
 | `using-doox` | always, before the others | nothing — conventions only |
 | `progress-report` | the user asks how one market's project is doing, or hands over a plan file and asks for the report | 4 tables in the customer's template, in the chat reply |
-| `reminder` | the user asks what has to be handled today, asks to remind the PICs, or the 9am run fires | one table per PIC + one PM table across every market, plus a Gmail draft per PIC |
+| `reminder` | the user asks what has to be handled today, asks to remind the PICs, or the 9am run fires | PM: one table across their markets + a Gmail draft per PIC. Chuyên gia: their own tables, no mail |
 
 `progress-report` reads **one** file and answers "where does this market stand"; `reminder` reads
 **every** file in the project folder and answers "what has to happen today". Do not use one to
@@ -158,16 +158,21 @@ live in the README:
 is.** No `README.md` at all, a README with no `## Người dùng`, a section with a name but no email:
 all the same case. Stop before reading a plan file, before printing anything, before drafting mail.
 
-**Ask one question at a time.** Put the question, wait for the answer, then ask the next. Do not
-batch them into one message and do not carry on with a partial set.
+**Ask in one form, not one question at a time.** Put all the missing fields into a single structured
+question — a form titled `Người dùng` holding a field per fact — and wait for it to come back filled:
 
-1. Tên của bạn là gì?
-2. Email của bạn là gì?
-3. Vai trò/chức vụ của bạn — `Project Manager` hay `Chuyên gia`?
+| Field | Type | Placeholder / options |
+|---|---|---|
+| Tên của bạn là gì? | free text | `Nguyễn Văn A` |
+| Email của bạn là gì? | free text | `ban@example.com` |
+| Vai trò / chức vụ của bạn? | choice | `Project Manager`, `Chuyên gia` |
 
-Question 3 is a choice between exactly those two; do not offer a third and do not infer the answer
-from anything else. Ask only the lines that are missing — a README holding the name and email but no
-role gets one question, not three.
+The role is a choice between exactly those two; do not offer a third and do not infer it from
+anything else. Include only the fields that are missing — a README holding the name and email but no
+role gets a one-field form.
+
+Do not carry on with a partial set. A form returned with a field blank is asked again, as a form
+holding just that field.
 
 Write the answers into the README, then carry on with the run that was interrupted.
 
@@ -206,8 +211,8 @@ name, not its initials, not its length, not "gần đúng", not a list of the PM
 from, not the filename that contains it. Someone who can guess names and read the failure messages
 must learn nothing about which guess was closer. State only that the claim did not match.
 
-Then ask again, one question at a time, exactly as above: the user re-enters their name, or picks
-`Chuyên gia` instead. Do not proceed to a report, a reminder, or a draft in the meantime, and do not
+Then ask again with the same form, holding the name and the role: the user re-enters their name, or
+picks `Chuyên gia` instead. Do not proceed to a report, a reminder, or a draft in the meantime, and do not
 fall back to showing a specialist's view of data they have not been matched to. A failed check that
 still prints something is not a check.
 
