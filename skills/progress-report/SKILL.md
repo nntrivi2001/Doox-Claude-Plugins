@@ -12,79 +12,35 @@ one market.
 
 ## 2. Input
 
+- Who is running this — `using-doox`, "Who is running this". If the README does not answer it, ask
+  before reading the file. A `Project Manager` gets every row, but only of a file whose `Tên PM`
+  matches their name — the claim is verified there, and a failed check stops the run without
+  revealing the real PM name. A `Chuyên gia` gets only the rows carrying their PIC code, as
+  `Người phụ trách` or `Người hỗ trợ`. Print the identity line above the report.
 - The plan file, `.xlsx`.
-- The market name and the project name. They come from the filename, which follows
-  `[Thị trường] - [Tên dự án].xlsx` — use the `using-doox` skill to read them, and show what was read
-  before printing the report. If the filename does not follow the convention, that skill says to ask
-  the user; do that rather than guessing, or the report goes out under the wrong market.
+- The market, the project and the PM name. They come from the filename, which follows
+  `[Thị trường] - [Tên dự án] - [Tên PM].xlsx` — use the `using-doox` skill to read them, and show
+  what was read before printing the report. If the filename does not follow the convention, that
+  skill says to ask the user; do that rather than guessing, or the report goes out under the wrong
+  market.
 
 ## 3. Fields to collect
 
-Thirteen: STT, Danh mục công việc, PIC, Ngày bắt đầu, Ngày kết thúc, Trạng thái (text), the
-completion checkbox, Hiện trạng vấn đề, Vấn đề phát sinh, Phương án xử lý, Ghi chú, Phương án triển
-khai, Tiêu chuẩn hoàn thành.
+Read the file per `using-doox`, section "Reading a plan file" — the two sheets, the join by row
+position, the built STT, the required columns, the section-heading rows to drop, and which sheet each
+field comes from all live there. Do not re-derive any of it here.
 
-They live in two sheets and have to be joined:
-
-- The plan detail sheet — Danh mục CV, Phương án triển khai, Tiêu chí hoàn thành, Người phụ trách,
-  Người hỗ trợ, Ngày bắt đầu, Ngày kết thúc, **Trạng thái (text)**, Rủi ro, Ghi chú.
-- The control sheet — Cập nhật hiện trạng, Vấn đề phát sinh, **Trạng thái (checkbox TRUE/FALSE)**,
-  Phương án giải quyết.
-
-**Join the two sheets by row position** — row *n* of the detail sheet is row *n* of the control
-sheet. Both other keys are broken on real files: STT restarts at every section, and `Danh mục CV`
-repeats (on the reference file 4 labels cover 14 rows, e.g. `Nghiệm thu giấy phép` appears 4 times,
-so joining by label silently merges four different tasks into one).
-
-Before joining, check the two sheets have the same row count and that `Danh mục CV` matches row by
-row. If they diverge, stop and report it — a shifted join produces a report that looks fine and is
-wrong throughout.
-
-Five required columns: **Danh mục công việc**, **Trạng thái (text)**, the **checkbox**, **Ngày bắt
-đầu**, **Ngày kết thúc**. If any one of them is missing, stop and ask the user — do not guess.
-
-Report which columns were matched before printing anything, e.g. `sheet 'KH Bảng 3 - Chi tiết' cột
-J = Ngày kết thúc`.
-
-A row with no Danh mục CV, or with a Danh mục but both date cells empty, is a section heading
-(`A`, `1`, `2`…). It is not a task: drop it from every table and from the counts.
-
-**Where each report column comes from.** The two sheets both carry `Ngày bắt đầu`, `Ngày kết thúc`,
-`Trạng thái` and `Ghi chú` under the same name — take each from the sheet named here, not from
-whichever one is found first:
-
-| Report column | Sheet | Source column |
-|---|---|---|
-| STT | detail | see below |
-| Danh mục công việc | detail | `Danh mục CV` |
-| PIC | detail | `Người phụ trách` |
-| Ngày bắt đầu / Ngày kết thúc | detail | same names |
-| Phương án triển khai | detail | `Phương án triển khai` |
-| Tiêu chuẩn hoàn thành | detail | `Tiêu chí hoàn thành/ bằng chứng xác nhận` |
-| Trạng thái (text) | detail | `Trạng thái` |
-| Hiện trạng vấn đề | control | `Cập nhật hiện trạng` |
-| Vấn đề phát sinh | control | `Vấn đề phát sinh` |
-| Phương án xử lý | control | `Phương án giải quyết` |
-| Ghi chú | control | `Ghi chú` |
-| checkbox | control | `Trạng thái` |
-
-**STT is built, not copied.** The numbering sits in several columns — a section marker (`A`, `B`,
-`I`, `II`…), then level-2 numbers (`3.1`), then level-3 (`5.1.2`). Print the nearest section marker
-above the row, a dot, then the row's own number: `II` + `3.1` = `II.3.1`. Only letters and Roman
-numerals are section markers; a purely numeric heading (`1`, `2`, `3`) is a sub-group, not a section.
-Without the prefix, `3.1` appears many times over and no row can be identified.
-
-Some level-3 numbers are typed with commas instead of dots — `3,1,1` where `3.1.1` was meant (8 of 28
-on the reference file). Normalise commas to dots, so the printed STT reads `II.3.1.1`.
+Thirteen fields end up in the report: STT, Danh mục công việc, PIC, Ngày bắt đầu, Ngày kết thúc,
+Trạng thái (text), the completion checkbox, Hiện trạng vấn đề, Vấn đề phát sinh, Phương án xử lý,
+Ghi chú, Phương án triển khai, Tiêu chuẩn hoàn thành. `Rủi ro` is read but not printed.
 
 ## 4. Classification
 
-**Done = the checkbox is TRUE *and* the text column reads `Hoàn thành`.** The checkbox alone is not
-enough, and a past end date is not a completion signal at all. Anything failing either condition
-counts as not done.
+`using-doox` defines done — checkbox TRUE **and** text `Hoàn thành`; anything failing either
+condition counts as not done.
 
-The text column holds three values: `Chưa triển khai`, `Đang triển khai`, `Hoàn thành`. Table 4 holds
-only `Hoàn thành`; tables 1, 2 and 3 hold only `Chưa triển khai` and `Đang triển khai`.
+Table 4 holds only `Hoàn thành`; tables 1, 2 and 3 hold only `Chưa triển khai` and
+`Đang triển khai`.
 
 Test in order, top to bottom. A task placed in an earlier table never reappears in a later one.
 
@@ -141,7 +97,8 @@ brackets, then the table:
 ```
 
 Do not rename, reorder, merge or drop a section, and do not add one — no `Các công việc sắp tới`, no
-`Chưa bắt đầu` table, no count-total line at the end.
+`Chưa bắt đầu` table, no count-total line at the end. A `Chuyên gia` still gets all four sections,
+filtered to their rows; a section left empty by the filter prints `_(không có)_` like any other.
 
 Tables 1, 2, 3 — eight columns:
 
