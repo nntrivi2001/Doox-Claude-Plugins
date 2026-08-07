@@ -20,9 +20,9 @@ one market.
 
 ## 3. Fields to collect
 
-Fourteen: STT, Danh mục công việc, PIC, Ngày bắt đầu, Ngày kết thúc, Trạng thái (text), the
+Thirteen: STT, Danh mục công việc, PIC, Ngày bắt đầu, Ngày kết thúc, Trạng thái (text), the
 completion checkbox, Hiện trạng vấn đề, Vấn đề phát sinh, Phương án xử lý, Ghi chú, Phương án triển
-khai, Tiêu chuẩn hoàn thành, Rủi ro.
+khai, Tiêu chuẩn hoàn thành.
 
 They live in two sheets and have to be joined:
 
@@ -61,7 +61,6 @@ whichever one is found first:
 | Ngày bắt đầu / Ngày kết thúc | detail | same names |
 | Phương án triển khai | detail | `Phương án triển khai` |
 | Tiêu chuẩn hoàn thành | detail | `Tiêu chí hoàn thành/ bằng chứng xác nhận` |
-| Rủi ro | detail | `Rủi ro` |
 | Trạng thái (text) | detail | `Trạng thái` |
 | Hiện trạng vấn đề | control | `Cập nhật hiện trạng` |
 | Vấn đề phát sinh | control | `Vấn đề phát sinh` |
@@ -85,7 +84,7 @@ enough, and a past end date is not a completion signal at all. Anything failing 
 counts as not done.
 
 The text column holds three values: `Chưa triển khai`, `Đang triển khai`, `Hoàn thành`. Table 4 holds
-only `Hoàn thành`; tables 1, 2, 3 and 5 hold only `Chưa triển khai` and `Đang triển khai`.
+only `Hoàn thành`; tables 1, 2 and 3 hold only `Chưa triển khai` and `Đang triển khai`.
 
 Test in order, top to bottom. A task placed in an earlier table never reappears in a later one.
 
@@ -95,17 +94,13 @@ Test in order, top to bottom. A task placed in an earlier table never reappears 
 | 2 | Các đầu việc gần deadline | not done + today ≤ Ngày kết thúc ≤ today+3 | Ngày kết thúc |
 | 3 | Các đầu việc đang trong quá trình triển khai | not done + Ngày bắt đầu ≤ today + not already in 1/2 | Ngày bắt đầu |
 | 4 | Các công việc đã hoàn thành | checkbox TRUE **and** text `Hoàn thành` | Ngày kết thúc |
-| 5 | Các công việc sắp tới | not done + today+1 ≤ Ngày bắt đầu ≤ today+3 + not already in 1/2 | Ngày bắt đầu |
-| — | Chưa bắt đầu | everything left: Ngày bắt đầu further than 3 days out, or no dates | no table, counted only |
-
-A task that is both near its deadline and about to start belongs in table 2 — that one is more
-urgent.
+| — | Chưa bắt đầu | everything left: Ngày bắt đầu in the future, or no dates | no table |
 
 **Status conflicts.** A task whose checkbox is TRUE while the text column is not `Hoàn thành`, or the
-reverse, counts as not done and still lands in table 1/2/3/5 by its dates. Flag it twice:
+reverse, counts as not done and still lands in table 1/2/3 by its dates. Flag it twice:
 
 - In its own row, append `[đã tick, cột chữ chưa cập nhật]` to whatever `Ghi chú` already holds.
-- List it again after table 5: Danh mục công việc plus both status values, so the user can fix the
+- List it again after table 4: Danh mục công việc plus both status values, so the user can fix the
   file.
 
 ## 5. Output
@@ -114,15 +109,15 @@ reverse, counts as not done and still lands in table 1/2/3/5 by its dates. Flag 
 file, and do not offer to. A file attachment is not a delivery of this report; it is a way of not
 delivering it.
 
-**Print every table in full, as Markdown, in the reply.** All five sections, every row of every
+**Print every table in full, as Markdown, in the reply.** All four sections, every row of every
 section, every column in the order given below, each cell carried whole. `Phương án triển khai` and
 `Tiêu chuẩn hoàn thành` run to several hundred characters with numbered sub-steps — carry them
 whole, only collapsing newlines inside a cell so the Markdown row stays valid. An empty cell prints
 as `-`. An empty section still prints its header row plus `_(không có)_`.
 
 A prose recap of the counts is not the report. `"Quá deadline: 4, Đang triển khai: 14"` states the
-numbers correctly and still fails, because it drops `Phương án triển khai`, `Tiêu chuẩn hoàn thành`,
-`Rủi ro` and `Hiện trạng` — exactly the columns the PM acts on.
+numbers correctly and still fails, because it drops `Hiện trạng vấn đề`, `Vấn đề phát sinh` and
+`Phương án xử lý` — exactly the columns the PM acts on.
 
 The report runs long on a real market: reading the file in slices and printing the tables in
 consecutive messages marked `(tiếp)` is fine. Shortening is not. Never cut rows, never cut cells,
@@ -135,7 +130,7 @@ Báo cáo tiến độ dự án:
 Cập nhật tiến độ dự án tại thị trường [Tên thị trường] dựa theo cập nhật mới nhất:
 ```
 
-Then five sections, each heading written exactly like this — number, label, colon, row count in
+Then four sections, each heading written exactly like this — number, label, colon, row count in
 brackets, then the table:
 
 ```
@@ -143,35 +138,33 @@ brackets, then the table:
 2. Các đầu việc gần deadline: (1)
 3. Các đầu việc đang trong quá trình triển khai: (14)
 4. Các công việc đã hoàn thành: (3)
-5. Các công việc sắp tới: (1)
 ```
 
-Do not rename, reorder, merge or drop a section, and do not add one.
+Do not rename, reorder, merge or drop a section, and do not add one — no `Các công việc sắp tới`, no
+`Chưa bắt đầu` table, no count-total line at the end.
 
-Tables 1, 2, 3, 5 — eleven columns:
+Tables 1, 2, 3 — eight columns:
 
-| STT | Danh mục công việc | PIC | Ngày kết thúc | Hiện trạng vấn đề | Vấn đề phát sinh | Phương án xử lý | Ghi chú | Phương án triển khai | Tiêu chuẩn hoàn thành | Rủi ro |
-|---|---|---|---|---|---|---|---|---|---|---|
+| STT | Danh mục công việc | PIC | Ngày kết thúc | Hiện trạng vấn đề | Vấn đề phát sinh | Phương án xử lý | Ghi chú |
+|---|---|---|---|---|---|---|---|
 
-Tables 3 and 5 swap `Ngày kết thúc` for `Ngày bắt đầu`. Every other column keeps its place.
+Table 3 swaps `Ngày kết thúc` for `Ngày bắt đầu`. Every other column keeps its place.
 
 Dates print as `dd/mm/yyyy`. One real row, to fix the level of detail expected:
 
 ```
-| II.3.1 | Chuẩn bị hồ sơ & đầu mối nộp hồ sơ | Doox4 | 21/08/2026 | - | - | - | - | 1. Nhận checklist chính thức từ … | Có checklist được tư vấn xác nhận … | Dùng checklist không cập nhật. |
+| II.3.1 | Chuẩn bị hồ sơ & đầu mối nộp hồ sơ | Doox4 | 21/08/2026 | Đã nhận checklist bản mềm, chờ tư vấn xác nhận | - | - | - |
 ```
 
 `Hiện trạng vấn đề`, `Vấn đề phát sinh`, `Phương án xử lý` and `Ghi chú` come from the control
 sheet and are empty on most rows — print `-`, never leave the cell out and never invent content.
-`Phương án triển khai`, `Tiêu chuẩn hoàn thành` and `Rủi ro` are almost always filled and are the
-long ones: print them whole.
 
 Table 4 — seven columns:
 
 | STT | Danh mục công việc | PIC | Ngày kết thúc | Ghi chú | Phương án triển khai | Tiêu chuẩn hoàn thành |
 |---|---|---|---|---|---|---|
 
-After table 5: the status-conflict list, if there is one.
+`Phương án triển khai` and `Tiêu chuẩn hoàn thành` are the long ones — print them whole, they appear
+only in table 4.
 
-Last line: `tổng = b1 + b2 + b3 + b4 + b5 + chưa bắt đầu`. If the numbers do not add up, report the
-discrepancy instead of publishing the report.
+After table 4: the status-conflict list, if there is one.

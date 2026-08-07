@@ -49,9 +49,9 @@ Người dùng đưa file kế hoạch `.xlsx` và hỏi tiến độ, hoặc y�
 
 ### 3. Trường dữ liệu cần lấy
 
-14 trường: STT, Danh mục công việc, PIC, Ngày bắt đầu, Ngày kết thúc, Trạng thái (chữ), ô tick hoàn
+13 trường: STT, Danh mục công việc, PIC, Ngày bắt đầu, Ngày kết thúc, Trạng thái (chữ), ô tick hoàn
 thành, Hiện trạng vấn đề, Vấn đề phát sinh, Phương án xử lý, Ghi chú, Phương án triển khai, Tiêu
-chuẩn hoàn thành, Rủi ro.
+chuẩn hoàn thành.
 
 Dữ liệu nằm ở hai sheet, phải ghép lại:
 
@@ -76,7 +76,7 @@ Nguồn từng cột phải ghi rõ trong skill: hai sheet cùng có `Ngày bắ
 
 Năm trường bắt buộc: **Danh mục công việc**, **Trạng thái (chữ)**, **ô tick**, **Ngày kết thúc**,
 **Ngày bắt đầu**. Không tìm thấy một trong năm thì dừng và hỏi người dùng, không đoán. Ngày bắt đầu
-bắt buộc vì bảng 3 và bảng 5 phân loại bằng chính cột đó.
+bắt buộc vì bảng 3 phân loại bằng chính cột đó.
 
 Dòng không có Danh mục CV, hoặc có Danh mục nhưng trống cả hai cột ngày, là dòng tiêu đề nhóm
 (`A`, `1`, `2`…) — không phải đầu việc, loại khỏi mọi bảng và khỏi phép đếm. Trên file tham chiếu:
@@ -93,7 +93,7 @@ một file chạy hai lần có thể khớp cột khác nhau — nên phải in
 xong.
 
 Cột chữ chỉ nhận ba giá trị: `Chưa triển khai`, `Đang triển khai`, `Hoàn thành`. Bảng 4 chỉ chứa
-`Hoàn thành`; bảng 1, 2, 3, 5 chỉ chứa `Chưa triển khai` và `Đang triển khai`.
+`Hoàn thành`; bảng 1, 2, 3 chỉ chứa `Chưa triển khai` và `Đang triển khai`.
 
 Xét lần lượt từ trên xuống; việc đã vào bảng trên không lặp lại ở bảng dưới.
 
@@ -103,11 +103,10 @@ Xét lần lượt từ trên xuống; việc đã vào bảng trên không lặ
 | 2 | Các đầu việc gần deadline | chưa xong + hôm nay ≤ Ngày kết thúc ≤ hôm nay+3 | Ngày kết thúc |
 | 3 | Các đầu việc đang trong quá trình triển khai | chưa xong + Ngày bắt đầu ≤ hôm nay + chưa vào bảng 1/2 | Ngày bắt đầu |
 | 4 | Các công việc đã hoàn thành | tick TRUE **và** chữ `Hoàn thành` | Ngày kết thúc |
-| 5 | Các công việc sắp tới | chưa xong + hôm nay+1 ≤ Ngày bắt đầu ≤ hôm nay+3 + chưa vào bảng 1/2 | Ngày bắt đầu |
-| — | Chưa bắt đầu | phần còn lại: Ngày bắt đầu xa hơn 3 ngày, hoặc không có ngày | không có bảng, chỉ đếm |
+| — | Chưa bắt đầu | phần còn lại: Ngày bắt đầu ở tương lai, hoặc không có ngày | không có bảng |
 
 **Lệch trạng thái.** Việc có tick TRUE nhưng chữ không phải `Hoàn thành` (và ngược lại) tính là chưa
-xong, vẫn xếp vào bảng 1/2/3/5 theo ngày. Đánh dấu ở hai nơi:
+xong, vẫn xếp vào bảng 1/2/3 theo ngày. Đánh dấu ở hai nơi:
 
 - Ngay trong dòng của nó, ô `Ghi chú` thêm `[đã tick, cột chữ chưa cập nhật]` vào cuối nội dung sẵn
   có. Không có dấu này thì người đọc bảng 1 không phân biệt được việc chậm thật với việc chỉ quên
@@ -118,17 +117,12 @@ Trên file tham chiếu có 9 dòng như vậy, đều là tick TRUE + chữ `Đ
 
 Ngưỡng 3 ngày lấy từ `idea.txt` dòng 7 (`ngày hoàn thành - 3 ngày`).
 
-Một việc vừa gần deadline vừa sắp bắt đầu thì nằm ở bảng 2 — gấp hơn, và nhờ xét theo thứ tự nên
-tổng cộng vẫn khớp.
-
-Nhóm "chưa bắt đầu" không có bảng nhưng phải đếm: trên file tham chiếu nó chiếm phần lớn đầu việc,
-bỏ đi thì hàng chục dòng biến mất mà không ai phát hiện.
+Nhóm "chưa bắt đầu" không xuất hiện trong báo cáo: mẫu khách chỉ có 4 mục.
 
 ### 5. Mẫu output
 
 Nguồn: `nháp ý tưởng.xlsx`, sheet `Sheet1`, ô `L3`, cột "Mẫu văn bản". Giữ nguyên thứ tự và nhãn
-cột. Khác duy nhất so với ô gốc: mẫu viết `[rủi ro]` chữ thường, hiển thị thành `Rủi ro` cho đồng bộ.
-Bảng 5 là bảng thêm mới, không có trong ô gốc; nó dùng đúng bộ cột của bảng 3.
+cột, đúng 4 mục — không thêm mục, không thêm cột.
 
 Hai dòng mở đầu:
 
@@ -137,10 +131,10 @@ Báo cáo tiến độ dự án:
 Cập nhật tiến độ dự án tại thị trường [Tên thị trường] dựa theo cập nhật mới nhất:
 ```
 
-Bảng 1, 2, 3, 5 — 11 cột:
+Bảng 1, 2, 3 — 8 cột:
 
-| STT | Danh mục công việc | PIC | Ngày kết thúc *(bảng 3 và 5: Ngày bắt đầu)* | Hiện trạng vấn đề | Vấn đề phát sinh | Phương án xử lý | Ghi chú | Phương án triển khai | Tiêu chuẩn hoàn thành | Rủi ro |
-|---|---|---|---|---|---|---|---|---|---|---|
+| STT | Danh mục công việc | PIC | Ngày kết thúc *(bảng 3: Ngày bắt đầu)* | Hiện trạng vấn đề | Vấn đề phát sinh | Phương án xử lý | Ghi chú |
+|---|---|---|---|---|---|---|---|
 
 Bảng 4 — 7 cột:
 
@@ -153,18 +147,16 @@ Tiêu đề mục, đúng chữ của mẫu gốc:
 2. Các đầu việc gần deadline
 3. Các đầu việc đang trong quá trình triển khai
 4. Các công việc đã hoàn thành
-5. Các công việc sắp tới
 
-Sau bảng 5: danh sách lệch trạng thái, nếu có.
-
-Dòng cuối báo cáo: `tổng = b1 + b2 + b3 + b4 + b5 + chưa bắt đầu`.
+Sau bảng 4: danh sách lệch trạng thái, nếu có. Không có dòng tổng ở cuối.
 
 ## Kiểm thử
 
 Chạy trên `HerioGreen-Vietnam.xlsx` (thị trường Vietnam):
 
-1. Tổng ở dòng đối chiếu bằng 81 — số đầu việc thật, sau khi loại 28 dòng tiêu đề nhóm.
-2. Sáu nhóm cộng lại đúng bằng tổng, không có việc nào nằm ở hai bảng.
+1. Bốn bảng cộng với nhóm "chưa bắt đầu" bằng 81 — số đầu việc thật, sau khi loại 28 dòng tiêu đề
+   nhóm. Số này chỉ để tự kiểm, không in ra báo cáo.
+2. Không có việc nào nằm ở hai bảng.
 3. Bảng 4 có đúng 3 dòng: chỉ những việc vừa tick TRUE vừa ghi chữ `Hoàn thành`.
 4. Danh sách lệch trạng thái có đúng 9 dòng.
 5. Soi tay 2–3 dòng mỗi bảng: nội dung ô khớp file gốc, không bị cắt.
