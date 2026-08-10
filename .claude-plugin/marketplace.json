@@ -8,7 +8,7 @@
     {
       "name": "doox",
       "source": "./",
-      "description": "Trợ lý dự án: đọc bảng kế hoạch, nhắc việc theo hạn, báo cáo tiến độ, lưu trữ & đúc kết, phân loại sự cố, dự báo tiến độ; duyệt báo giá và hồ sơ năng lực nhà thầu; nghiên cứu thị trường."
+      "description": "Trợ lý AI hỗ trợ quản lý và vận hành dự án: cập nhật kế hoạch, theo dõi & dự báo tiến độ, nhắc việc, tổng hợp báo cáo, quản lý tri thức; đồng thời phân tích tài liệu, BOQ, báo giá, hồ sơ nhà thầu và nghiên cứu thị trường theo khung tiêu chuẩn."
     }
   ]
 }
