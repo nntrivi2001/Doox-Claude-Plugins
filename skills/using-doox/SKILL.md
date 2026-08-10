@@ -68,22 +68,21 @@ sheet. Both other keys are broken on real files: STT restarts at every section, 
 repeats (on the reference file 4 labels cover 14 rows, e.g. `Nghiệm thu giấy phép` appears 4 times,
 so joining by label silently merges four different tasks into one).
 
-Before joining, check the two sheets line up: **compare the `Danh mục CV` column of one against the
-`Danh mục CV` column of the other, row index by row index, over the full sheet.** That column is the
-only alignment test. If a label differs at some row index, the sheets are shifted — stop and report
-it, naming the first row index that differs. A shifted join produces output that looks fine and is
-wrong throughout.
+Before joining, check the two sheets line up by **comparing the STT columns — the raw numbering cells
+(`A`, `II`, `3.1`, `5.1.2`…) of one sheet against the other, row index by row index, over the full
+sheet.** STT is not usable as a join key, but as an alignment check it is the right column: it is
+present on section rows and stub rows alike, it is short, and a shift shows up at the first row
+where the two disagree.
 
 **Do not compare "how many rows have data".** Each sheet carries its own columns, filled to its own
 extent — a stub row may be blank in the detail sheet and hold a `FALSE` checkbox in the control one,
-and either sheet may run further down with formatting or stray cells. Counting rows that way gives
-two different numbers for sheets that are perfectly aligned, and reports a mismatch that is not
-there. Count only rows where `Danh mục CV` is non-empty, and only after the label comparison above
-has passed. Row indices are what the join uses; a row that is empty in both sheets is aligned.
+and either sheet may run further with formatting or stray cells. Counting rows that way gives two
+different numbers for sheets that are perfectly aligned, and reports a mismatch that is not there.
 
-**A mismatch is reported only from that label comparison.** Never claim one sheet "has extra task
-rows" without naming the row index where the two labels first diverge and quoting both labels. If
-every label matches, the sheets are aligned — carry on and produce the report.
+If the STT cells differ at some row index, the sheets are shifted — stop and report it, naming the
+first row index that differs and quoting both values. A shifted join produces output that looks
+fine and is wrong throughout. If every STT matches, the sheets are aligned: carry on and produce the
+report. Never claim one sheet "has extra task rows" without that first differing row index.
 
 Five required columns: **Danh mục công việc**, **Trạng thái (text)**, the **checkbox**, **Ngày bắt
 đầu**, **Ngày kết thúc**. If any one of them is missing, stop and ask the user — do not guess.
@@ -154,6 +153,23 @@ Rewrite the affected lines rather than appending; a README that only grows stops
 This is the one file a Doox skill writes to. Plan files are read-only — several people co-author
 them on SharePoint, and writing to one destroys someone else's edit.
 
+### The README lives locally, never on a connector
+
+**Absolute rule: never create, upload, copy, sync or update a `README.md` through a connector.** Not
+Google Drive, not SharePoint, not OneDrive, not Dropbox, not Box, not a Gmail attachment, not any
+other remote store reached through a connector or MCP server — whatever the connector is called and
+however convenient it looks. The README is a local file in the local working folder, and that is the
+only place it exists.
+
+Connectors are **read-only for Doox**: they are where the plan files are read from, never where
+anything is written to. A run that reads a plan file off Drive still keeps its README on the local
+disk. Never "put the README next to the plan file so the team can see it" — the identity fields it
+carries decide what each person is allowed to see, and a copy on a shared drive is a copy anyone
+there can edit.
+
+No local disk to write to means writing nothing — keep it in the session and ask again next time.
+Never fall back to a connector for lack of anywhere else.
+
 **The README is internal. Never mention it to the user — not in any skill, not at any point.** Not
 its name, not that one exists, not that one is missing, not that it is being read, written, or
 searched for, not the identity fields kept in it. Lines like `Giờ tôi cần tìm folder dự án và file
@@ -181,7 +197,18 @@ live in the README:
 
 **Missing the section, or missing any one of those lines, means asking — no matter which run this
 is.** No `README.md` at all, a README with no `## Người dùng`, a section with a name but no email:
-all the same case. Stop before reading a plan file, before printing anything, before drafting mail.
+all the same case.
+
+**This is the first step of every Doox run, and it is a gate.** Settle who is running this before
+anything else happens — before listing the project folder, before opening a plan file, before
+parsing a sheet, before counting a task, before printing a table, before drafting mail. Nothing about
+a plan file is read or shown while any of the three facts is missing, and a `Chuyên gia` has no rows
+selected for them until their PIC is settled too. Do not "get a head start" on the file while waiting
+for the answer: work done before the identity is known is work that may belong to someone else, and a
+report printed first cannot be un-shown once the role turns out to be wrong.
+
+Once the answers are in and the role has passed its check, carry on with the run that was
+interrupted, from the beginning.
 
 **How to ask depends on the harness.** Never a numbered list of questions in prose, in either case.
 
