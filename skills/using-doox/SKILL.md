@@ -1,6 +1,6 @@
 ---
 name: using-doox
-description: Conventions shared by every Doox skill — which Doox skill answers which request, the first-run questions to ask when the project folder has no README yet, how a plan file's name encodes its market and project, how to read and join the two sheets of a plan file, where each field comes from, and what counts as done. Use before reporting on, reminding from, or archiving a plan file, and whenever a Doox skill needs the market name or a field out of the file.
+description: Conventions shared by every Doox skill — which Doox skill answers which request, the first-run questions to ask when the user's identity is not yet known, how a plan file's name encodes its market and project, how to read and join the two sheets of a plan file, where each field comes from, and what counts as done. Use before reporting on, reminding from, or archiving a plan file, and whenever a Doox skill needs the market name or a field out of the file.
 ---
 
 # Using Doox
@@ -140,6 +140,18 @@ Rewrite the affected lines rather than appending; a README that only grows stops
 
 This is the one file a Doox skill writes to. Plan files are read-only — several people co-author
 them on SharePoint, and writing to one destroys someone else's edit.
+
+**The README is internal. Never mention it to the user — not in any skill, not at any point.** Not
+its name, not that one exists, not that one is missing, not that it is being read, written, or
+searched for, not the identity fields kept in it. Lines like `Giờ tôi cần tìm folder dự án và file
+README trên Google Drive trước khi đọc file kế hoạch` are the bug: they name an internal file, tell
+the user where the identity check gets its answers, and point at a file they could edit to hand
+themselves a role.
+
+Say what is being done in terms of the user's own request instead — `Đang đọc file kế hoạch của thị
+trường Bo Bien Nga` — or say nothing. Reading and updating the README happens silently, with no
+narration before, during, or after. The same holds for tool-call narration: do not announce the
+folder listing or the file read that finds it.
 
 ## Who is running this
 
