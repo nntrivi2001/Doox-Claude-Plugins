@@ -158,24 +158,34 @@ live in the README:
 is.** No `README.md` at all, a README with no `## Người dùng`, a section with a name but no email:
 all the same case. Stop before reading a plan file, before printing anything, before drafting mail.
 
-**Ask in two steps: the role by picker, then name and email.** Never all three in one message, never
-as a numbered list.
+**How to ask depends on the harness.** Never a numbered list of questions in prose, in either case.
 
-**Step 1 — the role, always through a picker.** Use the harness's structured-question tool:
-`AskUserQuestion` in Claude Code, MCP elicitation in Cowork (mandatory there — Cowork asks nothing in
-prose), the picker on claude.ai. The question is `Vai trò / chức vụ của bạn?`, with exactly two
-options:
+**Cowork — one form, all three fields.** Cowork has MCP elicitation and must use it (it asks nothing
+in prose). Title it `Người dùng` and put every missing fact in that single form, then wait for it to
+come back filled:
+
+| Field | Type | Placeholder / options |
+|---|---|---|
+| Họ và tên của bạn | free text | `Nguyễn Văn A` |
+| Email của bạn | free text | `ban@example.com` |
+| Vai trò / chức vụ của bạn? | choice | `Project Manager`, `Chuyên gia` |
+
+That order is fixed: the role goes last, after the two text fields — not first.
+
+**Chat (claude.ai, Claude Code) — two steps.** No form holding text fields and a choice together, so
+split it.
+
+Step 1 — the role, always through a picker: `AskUserQuestion` in Claude Code, the picker on
+claude.ai. The question is `Vai trò / chức vụ của bạn?`, with exactly two options:
 
 - `Project Manager`
 - `Chuyên gia`
 
-Do not offer a third, do not infer the role from anything else, and do not type the two options out
-as text for the user to answer in a sentence. A role asked without a picker is a bug.
+Do not type the two options out as text for the user to answer in a sentence. A role asked without a
+picker is a bug. Wait for the pick before asking anything else.
 
-Wait for the pick before asking anything else.
-
-**Step 2 — name and email, only after the role came back.** Claude web has no text-field form, so
-ask these as plain text, in exactly this wording and nothing else:
+Step 2 — name and email, only after the role came back, as plain text in exactly this wording and
+nothing else:
 
 ```
 Để tiếp tục, xin bạn vui lòng cung cấp thêm các thông tin sau:
@@ -183,11 +193,10 @@ ask these as plain text, in exactly this wording and nothing else:
   Email của bạn
 ```
 
-Where the harness does have a text-field form — `AskUserQuestion` in Claude Code, elicitation in
-Cowork — ask the same two fields through it instead, titled `Người dùng`.
-
-Include only what is missing. A README holding the name and email but no role is step 1 alone; one
-holding the role but no email is step 2 alone, with just the missing line.
+In both cases: the role is a choice between exactly those two options — do not offer a third and do
+not infer it from anything else. Include only what is missing. A README holding the name and email
+but no role is the role question alone; one holding the role but no email is the text question alone,
+with just the missing line.
 
 Do not carry on with a partial set. An answer that leaves a field blank is asked again, holding just
 that field.
@@ -242,8 +251,9 @@ name, not its initials, not its length, not "gần đúng", not a list of the PM
 from, not the filename that contains it. Someone who can guess names and read the failure messages
 must learn nothing about which guess was closer. State only that the claim did not match.
 
-Then ask again, same two steps: the role picker first, so the user can pick `Chuyên gia` instead,
-then the name line if they stay on `Project Manager`. Do not proceed to a report, a reminder, or a draft in the meantime, and do not
+Then ask again the same way the harness asks: in Cowork, one form holding the role and the name; in
+chat, the role picker first — so the user can pick `Chuyên gia` instead — then the name line if they
+stay on `Project Manager`. Do not proceed to a report, a reminder, or a draft in the meantime, and do not
 fall back to showing a specialist's view of data they have not been matched to. A failed check that
 still prints something is not a check.
 
