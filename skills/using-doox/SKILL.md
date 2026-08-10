@@ -213,8 +213,9 @@ interrupted, from the beginning.
 **How to ask depends on the harness.** Never a numbered list of questions in prose, in either case.
 
 **Cowork — one form, all three fields.** Cowork has MCP elicitation and must use it (it asks nothing
-in prose). Title it `Người dùng` and put every missing fact in that single form, then wait for it to
-come back filled:
+in prose). Pass `title` explicitly on the call, set to `Người dùng` — it is a required parameter and
+leaving it out fails validation, so the form never reaches the user. Put every missing fact in that
+single form, then wait for it to come back filled:
 
 | Field | Type | Placeholder / options |
 |---|---|---|
@@ -309,7 +310,9 @@ the email local part and the name — shared prefix, shared digits, edit distanc
 few, plus the harness's own free-text escape. Only when nothing resembles the user at all does the
 picker fall back to every PIC found in the files.
 
-The question is bare: `PIC của bạn là gì?`. Do not explain why the automatic match failed, do not
+The question is bare: `PIC của bạn là gì?` — and in Cowork this picker is an elicitation call too,
+so it carries a `title` of `Người dùng` like the identity form. Do not explain why the automatic
+match failed, do not
 say the file carries no email or name beside the PIC, do not describe what was searched — that
 narrates the file's structure and tells the user which answer would have worked.
 
