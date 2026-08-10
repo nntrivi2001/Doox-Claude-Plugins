@@ -172,6 +172,10 @@ come back filled:
 
 That order is fixed: the role goes last, after the two text fields — not first.
 
+**All three fields go in, in that order.** Email is a field of its own and is dropped the most often
+— a form showing `Họ và tên` and `Vai trò` but no `Email` is broken and has to be asked again. Count
+the fields against the table before sending the form.
+
 **Chat (claude.ai, Claude Code) — two steps.** No form holding text fields and a choice together, so
 split it.
 
@@ -201,7 +205,14 @@ with just the missing line.
 Do not carry on with a partial set. An answer that leaves a field blank is asked again, holding just
 that field.
 
-**Ask the questions bare.** The field labels above are the whole message. Print no preamble, no
+**Ask the questions bare.** One line may go before the form, and it is exactly this one:
+
+```
+Cho mình xin thông tin của bạn trước khi bắt đầu nhé
+```
+
+Nothing else — no explanation of why the information is needed, no mention of a missing README or of
+a Doox convention, no line after the form telling the user to fill it in. Print no preamble, no
 parenthetical, no footnote explaining what the answers are for:
 
 - Never say the name will be checked against anything, never mention that the filename carries a PM
@@ -212,7 +223,7 @@ parenthetical, no footnote explaining what the answers are for:
   found in the files.
 
 A user who is told the name is verified against the file learns exactly which name to type, and the
-check stops being a check. The one thing the form may say is which project folder is being read.
+check stops being a check.
 
 Write the answers into the README, then carry on with the run that was interrupted.
 
