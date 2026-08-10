@@ -158,33 +158,39 @@ live in the README:
 is.** No `README.md` at all, a README with no `## Người dùng`, a section with a name but no email:
 all the same case. Stop before reading a plan file, before printing anything, before drafting mail.
 
-**Ask with the structured-question tool, in one form.** The harness has a tool for asking the user a
-question with fields and options — `AskUserQuestion` in Claude Code and Cowork, whatever the running
-harness calls its equivalent. Use it. It renders a titled form the user fills in, with a text box per
-free-text field and buttons for a choice.
+**Ask in two steps: the role by picker, then name and email.** Never all three in one message, never
+as a numbered list.
 
-Do not type the questions into the reply as a numbered list. Prose questions look improvised, lose
-the choice buttons, and let the user answer half of them in a sentence. If a form is possible, a
-numbered list is a bug.
+**Step 1 — the role, always through a picker.** Use the harness's structured-question tool:
+`AskUserQuestion` in Claude Code, MCP elicitation in Cowork (mandatory there — Cowork asks nothing in
+prose), the picker on claude.ai. The question is `Vai trò / chức vụ của bạn?`, with exactly two
+options:
 
-Title the form `Người dùng`. One field per missing fact, and wait for it to come back filled:
+- `Project Manager`
+- `Chuyên gia`
 
-| Field | Type | Placeholder / options |
-|---|---|---|
-| Tên của bạn là gì? | free text | `Nguyễn Văn A` |
-| Email của bạn là gì? | free text | `ban@example.com` |
-| Vai trò / chức vụ của bạn? | choice | `Project Manager`, `Chuyên gia` |
+Do not offer a third, do not infer the role from anything else, and do not type the two options out
+as text for the user to answer in a sentence. A role asked without a picker is a bug.
 
-The role is a choice between exactly those two; do not offer a third and do not infer it from
-anything else. Include only the fields that are missing — a README holding the name and email but no
-role gets a one-field form.
+Wait for the pick before asking anything else.
 
-Do not carry on with a partial set. A form returned with a field blank is asked again, as a form
-holding just that field.
+**Step 2 — name and email, only after the role came back.** Claude web has no text-field form, so
+ask these as plain text, in exactly this wording and nothing else:
 
-Only when the harness genuinely has no such tool: print the three labels, one per line, and nothing
-else. No numbering with explanations hanging off it, no paragraph before them, no follow-up
-paragraph after.
+```
+Để tiếp tục, xin bạn vui lòng cung cấp thêm các thông tin sau:
+  Họ và tên của bạn:
+  Email của bạn
+```
+
+Where the harness does have a text-field form — `AskUserQuestion` in Claude Code, elicitation in
+Cowork — ask the same two fields through it instead, titled `Người dùng`.
+
+Include only what is missing. A README holding the name and email but no role is step 1 alone; one
+holding the role but no email is step 2 alone, with just the missing line.
+
+Do not carry on with a partial set. An answer that leaves a field blank is asked again, holding just
+that field.
 
 **Ask the questions bare.** The field labels above are the whole message. Print no preamble, no
 parenthetical, no footnote explaining what the answers are for:
@@ -236,8 +242,8 @@ name, not its initials, not its length, not "gần đúng", not a list of the PM
 from, not the filename that contains it. Someone who can guess names and read the failure messages
 must learn nothing about which guess was closer. State only that the claim did not match.
 
-Then ask again with the same form, holding the name and the role: the user re-enters their name, or
-picks `Chuyên gia` instead. Do not proceed to a report, a reminder, or a draft in the meantime, and do not
+Then ask again, same two steps: the role picker first, so the user can pick `Chuyên gia` instead,
+then the name line if they stay on `Project Manager`. Do not proceed to a report, a reminder, or a draft in the meantime, and do not
 fall back to showing a specialist's view of data they have not been matched to. A failed check that
 still prints something is not a check.
 
