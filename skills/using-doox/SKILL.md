@@ -158,8 +158,16 @@ live in the README:
 is.** No `README.md` at all, a README with no `## Người dùng`, a section with a name but no email:
 all the same case. Stop before reading a plan file, before printing anything, before drafting mail.
 
-**Ask in one form, not one question at a time.** Put all the missing fields into a single structured
-question — a form titled `Người dùng` holding a field per fact — and wait for it to come back filled:
+**Ask with the structured-question tool, in one form.** The harness has a tool for asking the user a
+question with fields and options — `AskUserQuestion` in Claude Code and Cowork, whatever the running
+harness calls its equivalent. Use it. It renders a titled form the user fills in, with a text box per
+free-text field and buttons for a choice.
+
+Do not type the questions into the reply as a numbered list. Prose questions look improvised, lose
+the choice buttons, and let the user answer half of them in a sentence. If a form is possible, a
+numbered list is a bug.
+
+Title the form `Người dùng`. One field per missing fact, and wait for it to come back filled:
 
 | Field | Type | Placeholder / options |
 |---|---|---|
@@ -173,6 +181,23 @@ role gets a one-field form.
 
 Do not carry on with a partial set. A form returned with a field blank is asked again, as a form
 holding just that field.
+
+Only when the harness genuinely has no such tool: print the three labels, one per line, and nothing
+else. No numbering with explanations hanging off it, no paragraph before them, no follow-up
+paragraph after.
+
+**Ask the questions bare.** The field labels above are the whole message. Print no preamble, no
+parenthetical, no footnote explaining what the answers are for:
+
+- Never say the name will be checked against anything, never mention that the filename carries a PM
+  name, never hint that a wrong name will be caught.
+- Never describe what each role gets to see. "PM thấy toàn bộ, Chuyên gia chỉ thấy dòng của mình" is
+  an instruction on which answer unlocks more.
+- Never offer to look a PIC code up from a name or email at this point, and never list the codes
+  found in the files.
+
+A user who is told the name is verified against the file learns exactly which name to type, and the
+check stops being a check. The one thing the form may say is which project folder is being read.
 
 Write the answers into the README, then carry on with the run that was interrupted.
 
@@ -221,6 +246,9 @@ must not persist into the next run.
 
 ### What each role sees
 
+Internal — this table decides what to print. Do not recite it to the user, least of all while asking
+for their role.
+
 | Role | Sees |
 |---|---|
 | `Project Manager` | every row of the files whose `Tên PM` matches their name |
@@ -247,3 +275,9 @@ Thị trường: Bo Bien Nga | Dự án: Ke hoach xay dung tram sac EV (từ tê
 ```
 
 A wrong reading then shows up immediately, instead of after a full report has been built on it.
+
+**The third part of the filename stays out of that line, and out of every other line printed before
+the user has been verified.** Market and project only. Do not print the raw filename either — it
+carries the PM name, and a line that quotes the filename hands over the answer to the check the
+skill is about to run. After a `Project Manager` has matched, their own name is theirs to see; a
+`Chuyên gia` never needs it.
