@@ -68,9 +68,22 @@ sheet. Both other keys are broken on real files: STT restarts at every section, 
 repeats (on the reference file 4 labels cover 14 rows, e.g. `Nghiệm thu giấy phép` appears 4 times,
 so joining by label silently merges four different tasks into one).
 
-Before joining, check the two sheets have the same row count and that `Danh mục CV` matches row by
-row. If they diverge, stop and report it — a shifted join produces output that looks fine and is
+Before joining, check the two sheets line up: **compare the `Danh mục CV` column of one against the
+`Danh mục CV` column of the other, row index by row index, over the full sheet.** That column is the
+only alignment test. If a label differs at some row index, the sheets are shifted — stop and report
+it, naming the first row index that differs. A shifted join produces output that looks fine and is
 wrong throughout.
+
+**Do not compare "how many rows have data".** Each sheet carries its own columns, filled to its own
+extent — a stub row may be blank in the detail sheet and hold a `FALSE` checkbox in the control one,
+and either sheet may run further down with formatting or stray cells. Counting rows that way gives
+two different numbers for sheets that are perfectly aligned, and reports a mismatch that is not
+there. Count only rows where `Danh mục CV` is non-empty, and only after the label comparison above
+has passed. Row indices are what the join uses; a row that is empty in both sheets is aligned.
+
+**A mismatch is reported only from that label comparison.** Never claim one sheet "has extra task
+rows" without naming the row index where the two labels first diverge and quoting both labels. If
+every label matches, the sheets are aligned — carry on and produce the report.
 
 Five required columns: **Danh mục công việc**, **Trạng thái (text)**, the **checkbox**, **Ngày bắt
 đầu**, **Ngày kết thúc**. If any one of them is missing, stop and ask the user — do not guess.
@@ -204,9 +217,10 @@ Step 2 — name and email, only after the role came back, as plain text in exact
 nothing else:
 
 ```
-Để tiếp tục, xin bạn vui lòng cung cấp thêm các thông tin sau:
+Mình cần thêm một số thông tin sau:
   Họ và tên của bạn:
-  Email của bạn
+  Email của bạn:
+Bạn vui lòng cung cấp thêm các thông tin trên để tiếp tục nhé.
 ```
 
 In both cases: the role is a choice between exactly those two options — do not offer a third and do
@@ -239,17 +253,40 @@ check stops being a check.
 
 Write the answers into the README, then carry on with the run that was interrupted.
 
-### Matching the user to a PIC code
+### Matching the user to a PIC
 
-The plan file names people by anonymised code (`Doox1`–`Doox10`, `Qn1`–`Qn10`, `Thầu`), sometimes
-with a name or an email beside the code. For a user whose role is `Chuyên gia`, find their code:
-match their email first, their name second, against every PIC cell in every file.
+The plan file names people in `Người phụ trách` / `Người hỗ trợ` by a short name — `Doox1`–`Doox10`,
+`Qn1`–`Qn10`, `Thầu`, sometimes a real person's name. It is a name, not an opaque code, and it is
+usually derivable from what the user just typed. For a role of `Chuyên gia`, **match it yourself
+first; asking is the fallback, not the first move.**
 
-Found — record it as `Mã PIC` in the README and stop matching on later runs.
+Collect every distinct PIC value across all files, then try these in order, all comparisons ignoring
+case, diacritics, spaces, dots and hyphens:
 
-Not found — **stop and ask which code is theirs**, offering the codes that actually occur in the
-files. Do not fall back to showing everything, and do not guess from a partial name match: `Doox1`
-and `Doox10` are different people. Record the answer.
+1. **Email local part** — the part before `@`. `doox1@gmail.com` → `doox1` → PIC `Doox1`.
+2. **Email or name written beside the PIC** in the same cell, where the file carries one.
+3. **The user's name** against the PIC value — both the full name and its last word
+   (`Đỗ Hoàng Tùng` → `tung`).
+
+**Every one of these requires the whole value to be equal, never a prefix.** `doox1` matches `Doox1`
+and nothing else — `Doox10` is a different person, and a prefix match hands one specialist another's
+rows.
+
+Exactly one PIC matched — take it, record it as `Mã PIC` in the README, say nothing about how it was
+found, and stop matching on later runs.
+
+Two or more matched, or none did — ask, with a picker.
+
+**The picker offers the likeliest candidates, not the whole list.** Rank by how close each PIC is to
+the email local part and the name — shared prefix, shared digits, edit distance — and offer the top
+few, plus the harness's own free-text escape. Only when nothing resembles the user at all does the
+picker fall back to every PIC found in the files.
+
+The question is bare: `PIC của bạn là gì?`. Do not explain why the automatic match failed, do not
+say the file carries no email or name beside the PIC, do not describe what was searched — that
+narrates the file's structure and tells the user which answer would have worked.
+
+Record the answer.
 
 A `Project Manager` has no `Mã PIC` line and needs no match — but the claim itself gets checked, see
 below.
