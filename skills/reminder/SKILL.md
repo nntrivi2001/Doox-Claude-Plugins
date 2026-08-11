@@ -151,6 +151,8 @@ what went out and to whom.
 
 ## 8. Boundaries
 
-The reminder writes to no plan file — it reads and prints. A cell that looks wrong is reported, not
-corrected; `project-update` is the skill that changes a plan file. The one file this skill writes is
-the project `README.md`, per `using-doox`.
+**Quy tắc chung — `project-update` là skill duy nhất được ghi vào file kế hoạch.**
+
+**Quy tắc riêng của skill này — `reminder` không ghi vào file kế hoạch.** It reads and prints. A cell
+that looks wrong is reported, not corrected — the correction goes through `project-update`, with its
+confirmation. The one file this skill writes is the project `README.md`, per `using-doox`.

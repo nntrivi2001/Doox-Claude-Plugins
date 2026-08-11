@@ -125,3 +125,11 @@ Table 4 — seven columns:
 only in table 4.
 
 After table 4: the status-conflict list, if there is one.
+
+## 6. Boundaries
+
+**Quy tắc chung — `project-update` là skill duy nhất được ghi vào file kế hoạch.**
+
+**Quy tắc riêng của skill này — `progress-report` không ghi vào file kế hoạch.** A status conflict it
+finds is listed, never corrected; the correction goes through `project-update`, with its
+confirmation. The one file it writes is the project `README.md`, per `using-doox`.

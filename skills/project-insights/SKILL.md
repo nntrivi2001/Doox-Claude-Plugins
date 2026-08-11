@@ -274,10 +274,13 @@ is the moment the archive grew and the synthesis changed; print the full report 
 to one, say so and print the `Chưa đủ dữ liệu` line — an archive of one is still worth confirming
 received.
 
-Never move, rename, copy or write to a plan file to archive it. This skill writes to no plan file, and a
-"finished" one is still someone's record.
+Never move, rename, copy or write to a plan file to archive it. **This skill writes to no plan
+file**, and a "finished" one is still someone's record.
 
 ## 10. Boundaries
 
-This skill writes to no plan file — only `project-update` does. The one file it writes is the project `README.md`, per
-`using-doox`.
+**Quy tắc chung — `project-update` là skill duy nhất được ghi vào file kế hoạch.**
+
+**Quy tắc riêng của skill này — `project-insights` không ghi vào file kế hoạch.** It reads, classifies
+and forecasts; an issue it found is reported, never written back. The one file it writes is the
+project `README.md`, per `using-doox`.

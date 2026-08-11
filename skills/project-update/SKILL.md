@@ -10,9 +10,11 @@ description: Update tasks in the plan files — status, dates, issues, handling 
 The user reports a change to a task: it finished, it is pending, it slipped, a deadline moved, an
 issue appeared, a fix was decided. One task or twenty, one market or several in the same message.
 
-**This is the only Doox skill that writes to a plan file.** A report never "fixes" a cell it printed;
-it says the cell looks wrong and stops. Every write goes through here, through the confirmation in
-section 6.
+**Quy tắc chung — `project-update` là skill duy nhất được ghi vào file kế hoạch.** A report never
+"fixes" a cell it printed; it says the cell looks wrong and stops.
+
+**Quy tắc riêng của skill này — mọi lần ghi đều phải đi qua bước xác nhận ở mục 6.** No cell is
+written that the user has not seen and said yes to, in that turn.
 
 Not for reading the plan — that is `progress-report`, `reminder`, `project-insights`. This skill
 changes values in rows that already exist.
