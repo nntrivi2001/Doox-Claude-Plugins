@@ -14,12 +14,15 @@ belongs here.
 |---|---|---|
 | `using-doox` | always, before the others | nothing — conventions only |
 | `progress-report` | the user asks how one market's project is doing, or hands over a plan file and asks for the report | 4 tables in the customer's template, in the chat reply |
-| `reminder` | the user asks what has to be handled today, asks to remind the PICs, or the 9am run fires | PM: one table across their markets + a Gmail draft per PIC. Chuyên gia: their own tables, no mail |
+| `reminder` | the user asks what has to be handled today, asks to remind the PICs, or the 9am run fires | PM: one table across their markets + a Gmail sent per PIC. Chuyên gia: their own tables, no mail |
+| `project-insights` | the user asks what is stuck or going wrong, or asks to summarise/classify issues | issues grouped by work area and issue type, past issues with their common patterns and suggested fixes |
 
 `progress-report` reads **one** file and answers "where does this market stand"; `reminder` reads
-**every** file in the project folder and answers "what has to happen today". Do not use one to
-approximate the other — a reminder is not a shortened progress report, and a progress report of one
-market does not tell a PIC what is due.
+**every** file in the project folder and answers "what has to happen today"; `project-insights` reads
+every file too and answers "what is going wrong, of what kind, and what was done about the same kind
+before". Do not use one to approximate the other — a reminder is not a shortened progress report, a
+progress report of one market does not tell a PIC what is due, and neither of them classifies an
+issue.
 
 ## Plan file naming
 
@@ -78,6 +81,12 @@ where the two disagree.
 extent — a stub row may be blank in the detail sheet and hold a `FALSE` checkbox in the control one,
 and either sheet may run further with formatting or stray cells. Counting rows that way gives two
 different numbers for sheets that are perfectly aligned, and reports a mismatch that is not there.
+
+**An STT cell filled on one sheet and empty on the other is not a mismatch.** The control sheet
+leaves the level-3 numbering out on the rows where the detail sheet types it (8 rows of the reference
+file, `3,1,1` through `4,1,4`) — the two sheets are perfectly aligned there and `Danh mục CV` on both
+rows proves it. Compare only the row indexes where **both** sheets carry a value; treat a blank on
+either side as agreement.
 
 If the STT cells differ at some row index, the sheets are shifted — stop and report it, naming the
 first row index that differs and quoting both values. A shifted join produces output that looks
