@@ -1,5 +1,5 @@
 ---
-name: progress-report
+name: project-report
 description: Read a market's project plan (.xlsx) and produce the progress report in the customer's template — overdue, near deadline, in progress, done, starting soon. Use when the user hands over a plan file, asks how a project is doing, asks what is overdue or coming up, or asks for a progress report for a market.
 ---
 
@@ -130,6 +130,6 @@ After table 4: the status-conflict list, if there is one.
 
 **Quy tắc chung — `project-update` là skill duy nhất được ghi vào file kế hoạch.**
 
-**Quy tắc riêng của skill này — `progress-report` không ghi vào file kế hoạch.** A status conflict it
+**Quy tắc riêng của skill này — `project-report` không ghi vào file kế hoạch.** A status conflict it
 finds is listed, never corrected; the correction goes through `project-update`, with its
 confirmation. The one file it writes is the project `README.md`, per `using-doox`.

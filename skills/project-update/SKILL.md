@@ -16,7 +16,7 @@ issue appeared, a fix was decided. One task or twenty, one market or several in 
 **Quy tắc riêng của skill này — mọi lần ghi đều phải đi qua bước xác nhận ở mục 6.** No cell is
 written that the user has not seen and said yes to, in that turn.
 
-Not for reading the plan — that is `progress-report`, `reminder`, `project-insights`. This skill
+Not for reading the plan — that is `project-report`, `reminder`, `project-insights`. This skill
 changes values in rows that already exist.
 
 ## 2. Identity and permission — the gate
@@ -103,7 +103,7 @@ not at all.**
 | Ghi chú | the sheet the user meant; if both carry a value, ask which |
 
 Writing the checkbox without the text, or one sheet without the other, is the bug this table exists
-to prevent: `reminder` reads the text, `progress-report` reads the checkbox, and the two then
+to prevent: `reminder` reads the text, `project-report` reads the checkbox, and the two then
 disagree about the same task.
 
 Rows are matched between the sheets by **row position**, checked with the STT alignment test in

@@ -8,7 +8,7 @@ description: Read the plan files and produce the issue summary — open issues g
 ## 1. When to use
 
 The user asks what is stuck, what problems the project is hitting, for a summary/classification of
-issues, what finished projects can teach, or how far along a project is. `progress-report` answers
+issues, what finished projects can teach, or how far along a project is. `project-report` answers
 "where does this market stand" and `reminder` answers "what has to happen today"; this skill answers
 "what is going wrong, of what kind, what was done about the same kind before, and where this ends
 up".

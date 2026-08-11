@@ -13,12 +13,12 @@ belongs here.
 | Skill | Use it when | Output |
 |---|---|---|
 | `using-doox` | always, before the others | nothing — conventions only |
-| `progress-report` | the user asks how one market's project is doing, or hands over a plan file and asks for the report | 4 tables in the customer's template, in the chat reply |
+| `project-report` | the user asks how one market's project is doing, or hands over a plan file and asks for the report | 4 tables in the customer's template, in the chat reply |
 | `reminder` | the user asks what has to be handled today, asks to remind the PICs, or the 9am run fires | PM: one table across their markets + a Gmail draft per PIC (gửi khi PM yêu cầu). Chuyên gia: their own tables, no mail |
 | `project-update` | the user reports a change to a task — done, pending, slipped, blocked, deadline moved | the confirmed cells written into the plan files, and a report of what changed. The only skill that writes to a plan file |
 | `project-insights` | the user asks what is stuck or going wrong, asks to summarise/classify issues, asks what finished projects taught, asks how far along a project is, or hands over a plan file with every task done | 4 sections in the chat reply — open issues by work area and issue type, past issues and their patterns, lessons across the archived plans, progress forecast. No mail, ever |
 
-`progress-report` reads **one** file and answers "where does this market stand"; `reminder` reads
+`project-report` reads **one** file and answers "where does this market stand"; `reminder` reads
 **every** file in the project folder and answers "what has to happen today"; `project-insights` reads
 every file too and answers "what is going wrong, of what kind, what was done about the same kind
 before, and where this ends up"; `project-update` is the only one that **writes** — it changes the
@@ -150,7 +150,7 @@ Dates print as `dd/mm/yyyy` everywhere.
 ## Writing a plan file
 
 **`project-update` is the only skill that writes to a plan file. Every other skill is read-only** —
-`reminder`, `progress-report` and `project-insights` read and print, never touch a cell. A report
+`reminder`, `project-report` and `project-insights` read and print, never touch a cell. A report
 that "fixed a wrong date while it was in there" is a bug in that skill, not a service.
 
 Plan files are co-authored — Google Drive, OneDrive, SharePoint — so a write lands in someone else's
