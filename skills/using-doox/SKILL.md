@@ -27,10 +27,17 @@ neither of them classifies an issue or forecasts anything.
 ## Plan file naming
 
 ```
-[Thị trường] - [Tên dự án] - [Tên PM].xlsx
+[Thị trường] - [Tên dự án] - [Tên PM]
 ```
 
-Example — `Bo Bien Nga - Ke hoach xay dung tram sac EV - Nguyen Van A.xlsx`:
+**The extension is optional and is not part of the convention.** A native Google Sheets file has no
+extension at all — `Bo Bien Nga - Ke hoach lap dat tram sac - Do Hoang Tung` is a plan file, and
+requiring `.xlsx` is what makes a run report "no plan file found" while the file sits in the folder.
+Strip a trailing `.xlsx`/`.xls`/`.xlsm` if there is one, then split. A plan file is any spreadsheet
+whose name splits into the three parts — Google Sheets
+(`application/vnd.google-apps.spreadsheet`) and Excel alike.
+
+Example — `Bo Bien Nga - Ke hoach xay dung tram sac EV - Nguyen Van A`:
 
 | Field | Value |
 |---|---|

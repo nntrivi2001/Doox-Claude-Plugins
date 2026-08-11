@@ -12,8 +12,9 @@ The user asks what has to be handled today, asks to remind the PICs, or the 9am 
 ## 2. Input
 
 Every plan file in the Cowork project folder, not one file. Use the `using-doox` skill: read the
-project `README.md` first, settle who is running this, then take each `.xlsx` whose name follows
-`[Thị trường] - [Tên dự án] - [Tên PM].xlsx`, ignoring lock files (`~$…`, `.~lock.…#`). The market
+project `README.md` first, settle who is running this, then take each spreadsheet whose name follows
+`[Thị trường] - [Tên dự án] - [Tên PM]` — extension optional, Google Sheets included, per
+`using-doox` — ignoring lock files (`~$…`, `.~lock.…#`). The market
 read from each filename fills the `Thị trường` column, so every row can be traced back to its file.
 
 A `Project Manager` run covers only the files whose `Tên PM` matches them. A `Chuyên gia` run covers
@@ -72,7 +73,7 @@ it is listed at the end of the report so the user can fill the address in. Never
 ## 6. Output
 
 **The report is the chat reply itself.** Produce no `.docx`, `.md`, `.pdf` or `.xlsx`, and do not
-offer to. Print both sections in full, every row, every column, each cell carried whole — only
+offer to. Print the section in full, every row, every column, each cell carried whole — only
 collapsing newlines inside a cell so the Markdown row stays valid. An empty cell prints as `-`.
 Dates print as `dd/mm/yyyy`.
 
@@ -82,28 +83,25 @@ Opening line, verbatim:
 Các công việc cần xử lý trong ngày:
 ```
 
-Then the heading for the one section this run prints, written exactly as one of:
-
-```
-1. Đối với PIC:
-2. Đối với PM:
-```
-
-Keep the number that belongs to the section — a PM run prints `2. Đối với PM:` and no `1.`.
+Then the table itself — **no section heading**. A run prints one section, never both, so
+`1. Đối với PIC:` / `2. Đối với PM:` label nothing: the reader already knows which view is theirs,
+and a lone `2.` only advertises the section they did not get. Print neither line.
 
 **A run prints one of the two sections, never both** — which one comes from `using-doox`, "Who is
 running this". Print the identity line first, then:
 
 - `Project Manager` — **mục 2 only**: the single twelve-column table below, every row of every file
-  whose `Tên PM` matches them, `Thầu` included. No mục 1, no per-PIC tables.
+  whose `Tên PM` matches them, `Thầu` included. No per-PIC tables.
 - `Chuyên gia` — **mục 1 only**: their own table (rows where their code is `Người phụ trách`) and,
   below it, a second table headed `Hỗ trợ` for rows where their code is `Người hỗ trợ`. No other
   code's table, and no mục 2 — the PM view is not theirs to read.
 
+`Mục 1` / `mục 2` below are names for the two layouts, used here only — never printed.
+
 An empty `Hỗ trợ` table is dropped rather than printed as `_(không có)_`; a specialist supporting
 nobody today does not need to be told so twice.
 
-Mục 1, eleven columns — no `PIC` column, the heading already says whose table it is:
+Mục 1, eleven columns — no `PIC` column, every row is the specialist's own:
 
 | Thị trường | Danh mục công việc | Ngày bắt đầu | Ngày kết thúc | Phương án triển khai | Tiêu chuẩn hoàn thành | Rủi ro | Hiện trạng vấn đề | Vấn đề phát sinh | Phương án xử lý | Ghi chú |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -117,7 +115,7 @@ Mục 2, twelve columns — every row of the PM's markets, `Thầu` included, `P
 print them whole. `Hiện trạng vấn đề`, `Vấn đề phát sinh`, `Phương án xử lý` and `Ghi chú` come from
 the control sheet and are empty on most rows — print `-`, never invent content.
 
-**Print the report even when nothing is due.** The heading, then `_(không có)_`. The 9am run is
+**Print the report even when nothing is due.** The opening line, then `_(không có)_`. The 9am run is
 unattended and Cowork does not report a failed task, so a morning with no message has to mean the run
 broke, never "nothing to do today".
 

@@ -32,7 +32,8 @@ least one task not done, per `using-doox`. A finished project — every task don
 and feeds mục 3 only, never mục 1, 2 or 4.
 
 Use the `using-doox` skill first: read the project `README.md`, settle who is running this, then take
-each `.xlsx` following `[Thị trường] - [Tên dự án] - [Tên PM].xlsx`, ignoring lock files. The market
+each spreadsheet following `[Thị trường] - [Tên dự án] - [Tên PM]` — extension optional, Google
+Sheets included, per `using-doox` — ignoring lock files. The market
 read from each filename fills the `Thị trường` column.
 
 A `Project Manager` run covers only the files whose `Tên PM` matches them. A `Chuyên gia` run covers

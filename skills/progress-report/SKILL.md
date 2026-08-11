@@ -17,9 +17,9 @@ one market.
   matches their name — the claim is verified there, and a failed check stops the run without
   revealing the real PM name. A `Chuyên gia` gets only the rows carrying their PIC code, as
   `Người phụ trách` or `Người hỗ trợ`. Print the identity line above the report.
-- The plan file, `.xlsx`.
+- The plan file — a spreadsheet, `.xlsx` or a native Google Sheet.
 - The market, the project and the PM name. They come from the filename, which follows
-  `[Thị trường] - [Tên dự án] - [Tên PM].xlsx` — use the `using-doox` skill to read them, and show
+  `[Thị trường] - [Tên dự án] - [Tên PM]`, extension optional — use the `using-doox` skill to read them, and show
   what was read before printing the report. If the filename does not follow the convention, that
   skill says to ask the user; do that rather than guessing, or the report goes out under the wrong
   market.
