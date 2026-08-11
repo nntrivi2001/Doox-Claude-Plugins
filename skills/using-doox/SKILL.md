@@ -14,15 +14,15 @@ belongs here.
 |---|---|---|
 | `using-doox` | always, before the others | nothing — conventions only |
 | `progress-report` | the user asks how one market's project is doing, or hands over a plan file and asks for the report | 4 tables in the customer's template, in the chat reply |
-| `reminder` | the user asks what has to be handled today, asks to remind the PICs, or the 9am run fires | PM: one table across their markets + a Gmail sent per PIC. Chuyên gia: their own tables, no mail |
-| `project-insights` | the user asks what is stuck or going wrong, or asks to summarise/classify issues | issues grouped by work area and issue type, past issues with their common patterns and suggested fixes |
+| `reminder` | the user asks what has to be handled today, asks to remind the PICs, or the 9am run fires | PM: one table across their markets + a Gmail draft per PIC (gửi khi PM yêu cầu). Chuyên gia: their own tables, no mail |
+| `project-insights` | the user asks what is stuck or going wrong, asks to summarise/classify issues, asks what finished projects taught, asks how far along a project is, or hands over a plan file with every task done | 4 sections in the chat reply — open issues by work area and issue type, past issues and their patterns, lessons across the archived plans, progress forecast. No mail, ever |
 
 `progress-report` reads **one** file and answers "where does this market stand"; `reminder` reads
 **every** file in the project folder and answers "what has to happen today"; `project-insights` reads
-every file too and answers "what is going wrong, of what kind, and what was done about the same kind
-before". Do not use one to approximate the other — a reminder is not a shortened progress report, a
-progress report of one market does not tell a PIC what is due, and neither of them classifies an
-issue.
+every file too and answers "what is going wrong, of what kind, what was done about the same kind
+before, and where this ends up". Do not use one to approximate the other — a reminder is not a
+shortened progress report, a progress report of one market does not tell a PIC what is due, and
+neither of them classifies an issue or forecasts anything.
 
 ## Plan file naming
 

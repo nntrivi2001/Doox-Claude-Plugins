@@ -1,6 +1,6 @@
 ---
 name: reminder
-description: Read every market's plan file (.xlsx) in the project folder and produce the daily reminder — the PM's full table, or a specialist's own tasks — and on a PM run send one Gmail per PIC. Use when the user asks what has to be done today, asks to remind the team, or runs the 9am reminder.
+description: Read every market's plan file (.xlsx) in the project folder and produce the daily reminder — the PM's full table, or a specialist's own tasks — and on a PM run draft one Gmail per PIC. Use when the user asks what has to be done today, asks to remind the team, or runs the 9am reminder.
 ---
 
 # Reminder
@@ -58,7 +58,7 @@ entirely on a `Chuyên gia` run.
 The PIC cell holds an anonymised code — `Doox1`–`Doox10`, `Qn1`–`Qn10`, `Thầu`. The email address is
 typed **once, on one row**, next to its code; every other row carries the bare code.
 
-So build the directory before sending: scan every row of every file, collect each `code → email`
+So build the directory before drafting: scan every row of every file, collect each `code → email`
 pair found, and apply it to all rows carrying that code. The cell separates code from email four
 different ways — a newline, an en dash `–` (U+2013, not the ASCII `-`), parentheses, or nothing but a
 space. Handle all four; matching only the ASCII hyphen drops most of the file.
@@ -66,7 +66,7 @@ space. Handle all four; matching only the ASCII hyphen drops most of the file.
 `Thầu` is a contractor, not a person, and has no personal address. Its rows appear in the PM table
 and get no mail. A `Chuyên gia` therefore never sees `Thầu` rows unless their own code supports one.
 
-A code with no email anywhere in the files still has its rows in the PM table. It gets no mail, and
+A code with no email anywhere in the files still has its rows in the PM table. It gets no draft, and
 it is listed at the end of the report so the user can fill the address in. Never guess an address.
 
 ## 6. Output
@@ -126,33 +126,30 @@ only their own address status, not the team's.
 
 ## 7. Mail
 
-**Only a `Project Manager` run writes mail.** One Gmail **sent** per PIC code that has an email and
+**Only a `Project Manager` run writes mail.** One Gmail **draft** per PIC code that has an email and
 at least one row due: recipient that address, body that code's table in the mục 1 layout (eleven
 columns, no `PIC` column), subject `Nhắc việc [dd/mm/yyyy]`.
 
 Building those per-code tables is the one thing a PM run does beyond printing mục 2 — the report
 stays a single table, the mail does not.
 
-**Send them, do not draft them.** The 9am run is unattended: a draft nobody opens is a reminder
-nobody got. The PM has signed this off, so sending needs no further confirmation on a PM run and the
-skill does not stop to ask for one.
+**Draft, never send.** The run stops at the drafts every time, including the unattended 9am one. A
+draft costs a click; a wrong mail already in a PIC's inbox cannot be recalled.
 
-Two limits stand, and they are what keeps the sending safe:
+**Send only when the PM asks for it in that turn** — `gửi đi`, `gửi mail cho PIC` and the like.
+Then send the drafts already built, and only those: no re-reading, no new recipient, no address that
+was not read out of a plan file, nothing to `Thầu` or to a code whose email is missing. An
+instruction to send given in an earlier turn does not carry over to the next run — the request is per
+run, and silence is not a request.
 
-- **One mail per PIC per day.** After sending, write the date and the codes mailed into the project
-  `README.md`, one line — `Nhắc việc đã gửi: 11/08/2026 — Doox1, Doox3, Doox4`, rewritten each run,
-  not appended. Read that line before sending: if it already carries today's date, the run re-prints
-  the report in the chat and sends nothing to the codes listed. Mail already sent cannot be recalled,
-  and a PIC who gets the same list three times stops reading it.
-- **Nothing goes out to an address that was not read out of a plan file.** No guessed address, no
-  address typed from memory, no `Thầu`, no code whose email is missing anywhere in the files.
+**A `Chuyên gia` run writes no mail at all.** No draft to the team, none to themselves. They read
+their tables in the chat reply and that is the whole delivery. Do not offer to draft one either, and
+a `Chuyên gia` asking to send is refused: mail on this project goes out from the PM.
 
-**A `Chuyên gia` run sends no mail at all.** None to the team, none to themselves. They read their
-tables in the chat reply and that is the whole delivery. Do not offer to send one either.
+No draft for the mục 2 table, none for `Thầu`, none for a code with no address.
 
-No mail for the mục 2 table, none for `Thầu`, none for a code with no address.
-
-Say how many mails were sent and to which addresses, after the report.
+Say how many drafts were created and to which addresses, after the report — and after a send, say
+what went out and to whom.
 
 ## 8. Boundaries
 
