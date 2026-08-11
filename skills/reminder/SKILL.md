@@ -47,7 +47,11 @@ Nothing else. A task that started last week and is due next month is being worke
 the reminder has to raise; it would repeat every morning until the day it matters and train the
 reader to stop opening the mail.
 
-Order the rows: quá hạn first, then by `Ngày kết thúc` ascending, then by `Thị trường`.
+**A row belongs to exactly one case.** They overlap — a task starting today and due in two days fits
+two — so assign in this order and stop at the first that holds: **Quá hạn → Sắp đến hạn → Bắt đầu
+hôm nay**. The same task printed in two tables makes the reader count it twice.
+
+Inside each case, order by `Ngày kết thúc` ascending, then by `Thị trường`.
 
 The 3-day threshold comes from `idea.txt` (`ngày hoàn thành - 3 ngày`).
 
@@ -83,7 +87,7 @@ Opening line, verbatim:
 Các công việc cần xử lý trong ngày:
 ```
 
-Then the table itself — **no section heading**. A run prints one section, never both, so
+Then the tables — **no section heading**. A run prints one section, never both, so
 `1. Đối với PIC:` / `2. Đối với PM:` label nothing: the reader already knows which view is theirs,
 and a lone `2.` only advertises the section they did not get. Print neither line.
 
@@ -98,8 +102,24 @@ running this". Print the identity line first, then:
 
 `Mục 1` / `mục 2` below are names for the two layouts, used here only — never printed.
 
-An empty `Hỗ trợ` table is dropped rather than printed as `_(không có)_`; a specialist supporting
-nobody today does not need to be told so twice.
+### Three tables, one per case
+
+**Never one table holding all three cases.** The rows of section 4 are split into three tables, in
+this order, each under its own heading, written exactly:
+
+```
+Quá hạn:
+Sắp đến hạn (trong 3 ngày):
+Bắt đầu hôm nay:
+```
+
+Same columns in all three — the mục 1 or mục 2 layout below, whichever the run prints. A case with no
+rows still prints its heading, then `_(không có)_`: a morning with an empty `Quá hạn` is the one
+thing the reader most wants to see, and a missing heading reads as a run that forgot it.
+
+A `Chuyên gia` run splits their own table the same way, and the `Hỗ trợ` table below it too — there
+the empty cases are dropped instead of printed, and an entirely empty `Hỗ trợ` is dropped whole; a
+specialist supporting nobody today does not need to be told so three times.
 
 Mục 1, eleven columns — no `PIC` column, every row is the specialist's own:
 
@@ -115,7 +135,8 @@ Mục 2, twelve columns — every row of the PM's markets, `Thầu` included, `P
 print them whole. `Hiện trạng vấn đề`, `Vấn đề phát sinh`, `Phương án xử lý` and `Ghi chú` come from
 the control sheet and are empty on most rows — print `-`, never invent content.
 
-**Print the report even when nothing is due.** The opening line, then `_(không có)_`. The 9am run is
+**Print the report even when nothing is due.** The opening line, then the three headings each with
+`_(không có)_`. The 9am run is
 unattended and Cowork does not report a failed task, so a morning with no message has to mean the run
 broke, never "nothing to do today".
 
@@ -125,8 +146,10 @@ only their own address status, not the team's.
 ## 7. Mail
 
 **Only a `Project Manager` run writes mail.** One Gmail **draft** per PIC code that has an email and
-at least one row due: recipient that address, body that code's table in the mục 1 layout (eleven
-columns, no `PIC` column), subject `Nhắc việc [dd/mm/yyyy]`.
+at least one row due: recipient that address, body that code's rows in the mục 1 layout (eleven
+columns, no `PIC` column) and split into the same three tables, subject `Nhắc việc [dd/mm/yyyy]`.
+In the mail the empty cases are dropped — a PIC gets the tables that have rows, with no
+`_(không có)_` lines.
 
 Building those per-code tables is the one thing a PM run does beyond printing mục 2 — the report
 stays a single table, the mail does not.
