@@ -15,6 +15,7 @@ belongs here.
 | `using-doox` | always, before the others | nothing — conventions only |
 | `project-report` | the user asks how one market's project is doing, or hands over a plan file and asks for the report | 4 tables in the customer's template, in the chat reply |
 | `reminder` | the user asks what has to be handled today, asks to remind the PICs, or the 9am run fires | PM: one table across their markets + a Gmail draft per PIC (gửi khi PM yêu cầu). Chuyên gia: their own tables, no mail |
+| `market-research` | the user names a target market and asks to research it, or asks for a market report | a new `.xlsx` built from the saved report framework, filled, every figure sourced |
 | `project-update` | the user reports a change to a task — done, pending, slipped, blocked, deadline moved | the confirmed cells written into the plan files, and a report of what changed. The only skill that writes to a plan file |
 | `project-insights` | the user asks what is stuck or going wrong, asks to summarise/classify issues, asks what finished projects taught, asks how far along a project is, or hands over a plan file with every task done | 4 sections in the chat reply — open issues by work area and issue type, past issues and their patterns, lessons across the archived plans, progress forecast. No mail, ever |
 
@@ -234,7 +235,9 @@ live in the README:
 is.** No `README.md` at all, a README with no `## Người dùng`, a section with a name but no email:
 all the same case.
 
-**This is the first step of every Doox run, and it is a gate.** Settle who is running this before
+**This is the first step of every run that touches a plan file, and it is a gate.**
+`market-research` is the exception: it reads no plan file and shows nobody's rows, so it runs without
+the gate, for either role. Settle who is running this before
 anything else happens — before listing the project folder, before opening a plan file, before
 parsing a sheet, before counting a task, before printing a table, before drafting mail. Nothing about
 a plan file is read or shown while any of the three facts is missing, and a `Chuyên gia` has no rows
