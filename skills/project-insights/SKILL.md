@@ -274,10 +274,10 @@ is the moment the archive grew and the synthesis changed; print the full report 
 to one, say so and print the `Chưa đủ dữ liệu` line — an archive of one is still worth confirming
 received.
 
-Never move, rename, copy or write to a plan file to archive it. The plan files are read-only, and a
+Never move, rename, copy or write to a plan file to archive it. This skill writes to no plan file, and a
 "finished" one is still someone's record.
 
 ## 10. Boundaries
 
-Plan files are read-only. The one file a Doox skill writes is the project `README.md`, per
+This skill writes to no plan file — only `project-update` does. The one file it writes is the project `README.md`, per
 `using-doox`.

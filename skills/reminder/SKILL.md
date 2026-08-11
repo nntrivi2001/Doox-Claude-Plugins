@@ -151,5 +151,6 @@ what went out and to whom.
 
 ## 8. Boundaries
 
-Plan files are read-only — several people co-author them on SharePoint, and a write destroys someone
-else's edit. The one file a Doox skill writes is the project `README.md`, per `using-doox`.
+The reminder writes to no plan file — it reads and prints. A cell that looks wrong is reported, not
+corrected; `project-update` is the skill that changes a plan file. The one file this skill writes is
+the project `README.md`, per `using-doox`.
