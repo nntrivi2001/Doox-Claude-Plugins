@@ -26,10 +26,17 @@ Required every run:
 | Mục tiêu nghiên cứu | thẩm định trước khi đầu tư, chọn site, tìm nhà thầu |
 | Phạm vi địa lý | toàn quốc / một thành phố / một cụm site |
 | Mốc thời gian dữ liệu | dữ liệu từ năm nào trở lại đây được coi là còn dùng được |
+| Độ sâu | `nhanh` (mặc định) hoặc `sâu` |
 
 Missing any of them: ask, the way the harness asks (`using-doox`, "How to ask depends on the
 harness" — Cowork one elicitation form, chat plain text). Do not start researching on the market name
 alone and fill the rest in later; the scope decides which queries are run.
+
+**Độ sâu mặc định là `nhanh`.** It answers the go/no-go — national level, one round, the budgets of
+section 4 — and is what `Kenya có triển khai được không` actually needs. `sâu` is the full pass and runs
+only when the user asks for it or the objective is site selection, đấu thầu or an investment decision.
+Say which mode ran, and offer to escalate a `nhanh` report afterwards rather than guessing high. The
+mode sets the budget and the number of rounds, never the sourcing rules of section 3.
 
 **A country name with a city-level objective is a limit, not a gap to be filled by inference.** Say
 so plainly — `dữ liệu hiện có ở cấp quốc gia, chưa đủ cơ sở kết luận cho cấp thành phố` — and leave
@@ -95,8 +102,9 @@ dropped.
 
 ### Depth — the deep-research loop
 
-**This skill runs a full deep-research pass.** A report assembled from a handful of searches is the
-failure mode; expect dozens of queries, documents opened in full, and several rounds.
+**This skill runs a real research pass, sized by the `Độ sâu` from section 2.** A report assembled
+from a handful of searches is the failure mode; a `sâu` run means dozens of queries, primary documents
+opened, several rounds. A `nhanh` run means fewer queries and one round — never fewer sourcing rules.
 
 **1. Decompose.** Turn each group above into 3–5 concrete sub-questions before searching, each
 answering a specific row of the framework block it feeds. `Điện & utility` becomes: biểu giá điện áp
@@ -107,11 +115,15 @@ searches.
 **2. Scale the effort to the question.** Cheap facts do not deserve a campaign, and a market
 readiness call does not survive three searches:
 
-| Question | Budget |
-|---|---|
-| One fact (số trạm hiện có) | 3–5 queries, 1–2 documents |
-| One group of the framework | 8–15 queries, 3–5 documents read in full |
-| Whole market report | every group at its own budget, 25–60 unique sources total |
+| Question | `nhanh` | `sâu` |
+|---|---|---|
+| One fact (số trạm hiện có) | 3–5 queries, 1–2 documents | same |
+| One group of the framework | 4–6 queries, 2 documents | 8–15 queries, 3–5 documents |
+| Whole market report | every group at its budget, 10–18 unique sources total | 25–60 unique sources total |
+
+**The budget is a ceiling, not a target.** A group whose rows are all answered from a tier-1 source at
+query four stops at query four — running the rest of the budget to look thorough is the second failure
+mode, and it costs the same as research.
 
 **3. Search wide, then narrow.** Start with short, broad queries — long, over-specified queries return
 nothing and hide that the topic exists. Two to three keyword variants per sub-question, in the
@@ -125,39 +137,100 @@ register, the tender portal, the company's own site. `site:` queries against tho
 general search ranks away. Whatever search and fetch tools the harness offers are used — web search,
 `WebFetch`, firecrawl, exa; the protocol is the same, only the tool names change.
 
-**5. Read the document, never the snippet.** For each sub-question, open the 3–5 most promising
-sources in full. Take the figure from the page or PDF with the section it sits on and the condition
-it applies under — customer class, voltage band, year, region. A snippet has no conditions attached,
-and the conditions are what make a tariff usable.
+**5. Read the document, never the snippet.** For each sub-question, open the most promising sources at
+the budget above. Take the figure from the page or PDF with the section it sits on and the condition it
+applies under — customer class, voltage band, year, region. A snippet has no conditions attached, and
+the conditions are what make a tariff usable.
+
+**Read the section, not the whole volume.** A tariff schedule or a decree runs to hundreds of pages and
+one of them carries the figure. Save the file and pull out the section — search it for the tariff code,
+the customer class, the article number — rather than pulling the whole document in to be read. Whole
+files come in only when they are short. **And extract before moving on**: reduce every source to its
+evidence-log line the moment it is open, then let the raw document go. A document held open while nine
+more are read is paid for ten times over.
 
 **6. Follow the citation chain.** A tier-2 article citing a decree, a tariff schedule or a report is
 a pointer, not the source: fetch the decree and cite that. This is how a tier-2 lead becomes tier-1
 evidence.
 
-**7. Parallelise by group, never by "go research this market".** Where the harness has subagents,
-dispatch one per framework group, each with its own sub-questions, its own budget from the table
-above, and an explicit boundary so two agents do not research the same thing. Each returns findings
-**with sources attached** — a finding that comes back without its URL and date is unusable and gets
-re-run, not written down.
+**7. Where the harness has subagents, the searching happens in them — not here.** One agent per
+framework group, each with its own sub-questions, its own budget from the table above, and an explicit
+boundary so two agents do not research the same thing. This is the default, not an optimisation: **the
+main thread runs no search and fetches no document itself.** It decomposes, dispatches, and fills the
+file from what comes back. A ministry PDF read in the main thread stays in the conversation and is
+re-read on every turn after it; read inside an agent, it is paid for once and thrown away.
 
-**8. Loop until the gaps are named.** After each round, list every framework row still empty and
-every figure still standing on one source, and run a narrower round aimed only at those. Stop a
-thread when a further round adds nothing new — diminishing returns is a valid stop, an empty row is
-not a valid finish. `Không tìm thấy` is a conclusion only after the primary source has been checked
-directly.
+What an agent hands back is **the evidence-log lines and nothing else** — the format at the end of this
+section, plus the sub-questions it found nothing for. No prose report, no market summary, no quoted
+paragraphs. A quote is one line and only where the exact wording is the evidence, a tariff condition or
+a legal clause. **A finding without its URL and date is unusable**: re-run it, do not write it down.
+
+Agents share a **seen-source list** — the evidence log where there is a disk, otherwise the boundary in
+each brief. The same tariff decree feeds four groups and is fetched once; an agent that hits a logged URL
+takes the logged figure and moves on.
+
+**Search and extract is mechanical; put it on the cheap model** where the harness allows a model per
+agent. Decomposition, the cross-group analysis of section 6 and writing the file stay with the main
+model — that is where judgement is.
+
+**No subagents in this harness** — then the extract-before-moving-on rule of step 5 is the whole defence
+and is not optional: one source open at a time, reduced to its log line, dropped. Run `nhanh` budgets
+unless `sâu` was asked for, and say in the reply that the run was single-threaded.
+
+**8. One narrowing round, then name what is left.** After the first round, list every framework row
+still empty and every figure still standing on one source, and run **one** narrower round aimed only at
+those. `nhanh` stops there. `sâu` gets a third round only for rows that are decision-grade — giá điện,
+giấy phép, thời gian đấu nối, thuế, chi phí — and only where the primary source has not yet been opened
+directly. Everything else is written down as a named gap.
+
+**A named gap is a valid finish; an unnamed empty row is not.** Rounds four and up buy almost nothing
+and cost as much as round one, so the report is not held back for them — say in the reply which rows
+stayed empty and which primary source would close them. `Không tìm thấy` is a conclusion only after
+that source has been checked directly.
 
 **9. Citation pass at the end.** Before filling the file, go back over every figure and attach its
-source, date and condition — one pass dedicated to it, not done from memory while writing. Any claim
-that cannot be traced to a logged source is deleted or relabelled `Chưa xác minh`.
+source, date and condition — one pass dedicated to it, not done from memory while writing. **The pass
+runs against the evidence log**, not from memory and not by re-running the group's research: a figure
+that is not in the log was never verified, and the default fix is to relabel it `Chưa xác minh`.
+
+**Re-research when the log itself looks wrong — targeted, not a fresh round.** The pass is where a bad
+figure surfaces, and letting it through because searching again is expensive is the worse mistake. Go
+back out for a figure when:
+
+| Trigger | What to do |
+|---|---|
+| Two figures contradict each other, or a consistency check of section 5 fails | Open the primary source for both and settle which is right |
+| A decision-grade figure rests on one source — giá điện, giấy phép, thời gian đấu nối, thuế, chi phí — and step 8 did not already go after it | One more independent source, or the official one directly |
+| The log line has no date, no condition, or a condition that does not fit the use — wrong customer class, wrong voltage band, wrong year | Re-open that same source for the missing condition |
+| A figure is off by an order of magnitude, or the unit looks converted wrong — kW vs kWh, per trạm vs per trụ | Verify at source before it reaches a cell |
+| The figure decides `Mức độ sẵn sàng chung` and its source is tier 2 | Push for tier 1 |
+
+**Bounded:** one targeted attempt per figure, aimed at the specific document or agency — never a
+re-run of the whole group, and it does not reopen the rounds of step 8. It fails, the figure is
+`Chưa xác minh` with the doubt written down: `nguồn X ghi 45 USD/kWh, sai đơn vị hoặc sai bậc giá, chưa
+xác minh được`. An empty row is not a trigger — that is a named gap and it stays one. Unease with no
+named trigger is not a trigger either.
 
 Keep an evidence log throughout — `nguồn | cấp 1/2 | URL | ngày công bố | số liệu lấy ra | điều kiện
-áp dụng` — one line per source used. It fills the `Cơ sở dữ liệu (cách tính + nguồn)` column and it
-is what makes a figure checkable six months later.
+áp dụng | ô nào dùng` — one line per source used. It fills the `Cơ sở dữ liệu (cách tính + nguồn)`
+column and it is what makes a figure checkable six months later.
+
+**The log lives on disk while the research runs**, not in the conversation: a folder
+`Nguồn báo cáo thị trường [Thị trường] dd_mm_yyyy/` beside the output file, named to pair with it, one
+markdown file per framework group, each agent appending only to its own — two agents on one file corrupt
+it. The main thread reads a group's file when it fills that group's rows, and reads it once. This is
+also what makes a run resumable: a
+session that is interrupted or compacted re-reads the log instead of re-running forty searches, and a
+second market report can be told to reuse a log that is still inside the mốc thời gian.
+
+**No disk in this harness** — then the log comes back in the agents' replies and is kept as the single
+newest message of the run; nothing is re-quoted from it as it grows, and it reaches the deliverable the
+same way it always does — through the `Cơ sở dữ liệu (cách tính + nguồn)` column of section 7.
 
 **The bar for calling the report done:** every row of Bảng 1–4 worked, each group resting on tier-1/2
 sources or on a written gap, no decision-grade figure standing on a single source without that being
-said, and a methodology note in the reply — số truy vấn đã chạy, số nguồn đã dùng, nhóm nào thiếu dữ
-liệu.
+said, and a methodology note in the reply — độ sâu đã chạy (`nhanh`/`sâu`), số truy vấn, số nguồn, số
+vòng, nhóm nào thiếu dữ liệu, và — sau một run `nhanh` — những ô nào một run `sâu` có thể lấp được.
 
 ## 5. Normalising before comparing
 
@@ -226,7 +299,9 @@ the expected depth and tone: read it for calibration, never carry it into the ou
 Name the output `Báo cáo thị trường [Thị trường] dd_mm_yyyy.xlsx`, in the project folder —
 `Báo cáo thị trường Bo Bien Nga 11_08_2026.xlsx`. Underscores in the date, and **no ` - ` anywhere in
 the name**: a name with two ` - ` separators is read as a plan file by every other Doox skill
-(`using-doox`, "Plan file naming") and would land in tomorrow's reminder as a project.
+(`using-doox`, "Plan file naming") and would land in tomorrow's reminder as a project. The source-log
+folder of section 4 sits beside it under the matching name, and the same ` - ` rule holds for the files
+inside it.
 
 The framework's own layout, to fill in place — do not renumber, retitle or reorder it:
 

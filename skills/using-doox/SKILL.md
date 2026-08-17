@@ -188,7 +188,9 @@ Update it when a run reveals:
 
 Rewrite the affected lines rather than appending; a README that only grows stops being read.
 
-Besides a plan file under `project-update`, this is the only file a Doox skill writes to.
+A Doox skill writes to four things and nothing else: a plan file under `project-update`, this README,
+and — under `market-research` only — the market report `.xlsx` it produces plus that report's source-log
+folder. Every other skill is read-only.
 
 ### The README lives locally, never on a connector
 
