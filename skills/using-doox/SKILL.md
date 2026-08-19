@@ -250,62 +250,41 @@ report printed first cannot be un-shown once the role turns out to be wrong.
 Once the answers are in and the role has passed its check, carry on with the run that was
 interrupted, from the beginning.
 
-**How to ask depends on the harness.** Never a numbered list of questions in prose, in either case.
+**Ask with `doox_form` — one form, all three fields.** The tool ships with this plugin (MCP server
+`doox-forms`) and the harness may expose it under a prefix, e.g. `mcp__doox-forms__doox_form`. It sends
+an MCP elicitation and returns what the user filled in. Call it with `title` set to `Người dùng` and
+these fields, in this order:
 
-**Cowork — one form, all three fields.** Send an `elicitation/create` request whose `requestedSchema`
-is a flat object holding one property per missing fact, then wait for it to come back filled. Send
-this exact request — the `title` is required and a call without it fails validation, so the form
-never reaches the user:
+| `name` | `label` | `type` | `hint` |
+|---|---|---|---|
+| `hoTen` | Họ và tên của bạn | `text` | `Nguyễn Văn A` |
+| `email` | Email của bạn | `email` | `ban@example.com` |
+| `vaiTro` | Vai trò / chức vụ của bạn? | `choice` | options `Project Manager`, `Chuyên gia` |
 
-```json
-{
-  "message": "Người dùng",
-  "title": "Người dùng",
-  "requestedSchema": {
-    "type": "object",
-    "properties": {
-      "hoTen": {
-        "type": "string",
-        "title": "Họ và tên của bạn",
-        "description": "Nguyễn Văn A"
-      },
-      "email": {
-        "type": "string",
-        "format": "email",
-        "title": "Email của bạn",
-        "description": "ban@example.com"
-      },
-      "vaiTro": {
-        "type": "string",
-        "title": "Vai trò / chức vụ của bạn?",
-        "enum": ["Project Manager", "Chuyên gia"]
-      }
-    },
-    "required": ["hoTen", "email", "vaiTro"]
-  }
-}
-```
+That order is fixed: the role goes last, after the two text fields — not first. **All three go in.**
+`email` is the field dropped most often — a form showing `Họ và tên` and `Vai trò` but no `Email` is
+broken and has to be asked again. Count the fields against the table before sending the call.
 
-That order is fixed: the role goes last, after the two text fields — not first.
+Include only what is missing: a README holding the name and email but no role sends `vaiTro` alone.
 
-**All three properties go in, in that order.** `email` is a property of its own and is dropped the
-most often — a form showing `Họ và tên` and `Vai trò` but no `Email` is broken and has to be asked
-again. Count the properties against the request above before sending it. The `description` strings
-are hints shown in the field, not defaults: a field left untouched comes back absent, never as its
-hint.
+**Read what the tool returns before using it.** It comes back as JSON: `{"ok": true, "answers": {…}}`,
+or `{"ok": false, "reason": "…"}`.
 
-**A prose table is not a call.** Listing the fields as `free text` / `choice` in the reply, or as a
-markdown table of types, sends nothing: the request above is what reaches the user. If the JSON has
-not been sent, the question has not been asked.
+| Return | Do |
+|---|---|
+| `ok: true` | record the answers, run the role check below |
+| `ok: false`, reason names the missing `elicitation` capability | that harness cannot render a form — fall back to the two steps below |
+| `ok: false`, `decline` or `cancel` | stop; the run needs an identity and did not get one, and nothing is guessed in its place |
 
-Handle the three outcomes: `accept` carries the answers into the checks below; `decline` and `cancel`
-both stop — the run needs an identity and did not get one, and nothing is guessed in its place.
+**Do not skip `doox_form` on the assumption that a harness has no elicitation.** The returned `reason`
+is the only thing that moves the run onto the two-step fallback.
 
-**Chat (claude.ai, Claude Code) — two steps.** No form holding text fields and a choice together, so
-split it.
+### Fallback — only when the tool says there is no elicitation
 
-Step 1 — the role, always through a picker: `AskUserQuestion` in Claude Code, the picker on
-claude.ai. The question is `Vai trò / chức vụ của bạn?`, with exactly two options:
+Two steps, never a numbered list of questions in prose.
+
+Step 1 — the role, always through the harness's structured-question tool (`AskUserQuestion` in Claude
+Code). The question is `Vai trò / chức vụ của bạn?`, with exactly two options:
 
 - `Project Manager`
 - `Chuyên gia`
@@ -323,10 +302,11 @@ Mình cần thêm một số thông tin sau:
 Bạn vui lòng cung cấp thêm các thông tin trên để tiếp tục nhé.
 ```
 
-In both cases: the role is a choice between exactly those two options — do not offer a third and do
-not infer it from anything else. Include only what is missing. A README holding the name and email
-but no role is the role question alone; one holding the role but no email is the text question alone,
-with just the missing line.
+The split exists because `AskUserQuestion` carries no free-text field: an email asked through it comes
+back as a picked option instead of an address. That is a limit of the fallback, not of `doox_form`.
+
+In both paths the role is a choice between exactly those two options — do not offer a third and do not
+infer it from anything else.
 
 Do not carry on with a partial set. An answer that leaves a field blank is asked again, holding just
 that field.
@@ -379,34 +359,13 @@ Two or more matched, or none did — ask, with a picker.
 
 **The picker offers the likeliest candidates, not the whole list.** Rank by how close each PIC is to
 the email local part and the name — shared prefix, shared digits, edit distance — and offer the top
-few, plus the harness's own free-text escape. An elicitation `enum` has no such escape, so there the
-candidate list carries a last option of `Khác` and the answer to that is asked again as a text
-property. Only when nothing resembles the user at all does the picker fall back to every PIC found in
-the files.
+few, plus the harness's own free-text escape. Only when nothing resembles the user at all does the
+picker fall back to every PIC found in the files.
 
-The question is bare: `PIC của bạn là gì?` — and in Cowork this picker is an `elicitation/create`
-call too, one property, its `enum` filled with the candidates ranked above:
-
-```json
-{
-  "message": "Người dùng",
-  "title": "Người dùng",
-  "requestedSchema": {
-    "type": "object",
-    "properties": {
-      "pic": {
-        "type": "string",
-        "title": "PIC của bạn là gì?",
-        "enum": ["PIC-01", "PIC-07", "PIC-12", "Khác"]
-      }
-    },
-    "required": ["pic"]
-  }
-}
-```
-
-Those three values are a shape, not a list to send: the `enum` holds the candidates this run actually
-ranked. Do not explain why the automatic match failed, do not
+The question is bare: `PIC của bạn là gì?` — one `doox_form` call, `title` `Người dùng`, a single
+`choice` field named `pic` whose options are the candidates ranked above. `ok: false` on the capability
+falls back to the harness's own picker with the same options plus its free-text escape. Do not explain
+why the automatic match failed, do not
 say the file carries no email or name beside the PIC, do not describe what was searched — that
 narrates the file's structure and tells the user which answer would have worked.
 

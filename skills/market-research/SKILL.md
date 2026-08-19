@@ -36,102 +36,51 @@ queries are run.
 
 ### How to ask
 
-**Cowork — one MCP elicitation form, every missing fact in it, asked once.** Send an
-`elicitation/create` request whose `requestedSchema` is a flat object holding one property per missing
-fact. The client renders it as a form and returns `action: "accept"` with the filled `content`,
-`"decline"`, or `"cancel"`. Send this exact request — the `title` is required and a call without it
-fails validation, so the form never reaches the user:
+**Ask with `doox_form` — one real form, every missing fact in it, asked once.** The tool ships with
+this plugin (MCP server `doox-forms`) and the harness may expose it under a prefix, e.g.
+`mcp__doox-forms__doox_form`. It sends an MCP elicitation and returns what the user filled in. Call it
+with `title` set to `Nghiên cứu thị trường` and these fields, in this order:
 
-```json
-{
-  "message": "Nghiên cứu thị trường",
-  "title": "Nghiên cứu thị trường",
-  "requestedSchema": {
-    "type": "object",
-    "properties": {
-      "thiTruong": {
-        "type": "string",
-        "title": "Thị trường / khu vực nghiên cứu",
-        "description": "Toronto, Canada"
-      },
-      "mtThamDinh": {
-        "type": "boolean",
-        "title": "Mục tiêu — Thẩm định trước khi đầu tư",
-        "default": false
-      },
-      "mtChonSite": {
-        "type": "boolean",
-        "title": "Mục tiêu — Chọn site cụ thể",
-        "default": false
-      },
-      "mtNhaThau": {
-        "type": "boolean",
-        "title": "Mục tiêu — Tìm nhà thầu / NCC",
-        "default": false
-      },
-      "mtDoiThu": {
-        "type": "boolean",
-        "title": "Mục tiêu — Khảo sát đối thủ và CPO hiện hữu",
-        "default": false
-      },
-      "mtPhapLy": {
-        "type": "boolean",
-        "title": "Mục tiêu — Tìm hiểu pháp lý và giấy phép",
-        "default": false
-      },
-      "phamVi": {
-        "type": "string",
-        "title": "Phạm vi địa lý",
-        "enum": ["Toàn quốc", "Một thành phố", "Một cụm site"]
-      },
-      "mocThoiGian": {
-        "type": "string",
-        "title": "Mốc thời gian dữ liệu",
-        "enum": ["Từ 2024", "Từ 2022", "Từ 2020", "Không giới hạn"]
-      },
-      "doSau": {
-        "type": "string",
-        "title": "Độ sâu",
-        "enum": ["Nhanh", "Sâu"]
-      }
-    },
-    "required": ["thiTruong", "phamVi", "mocThoiGian", "doSau"]
-  }
-}
-```
-
-Handle the three outcomes: `accept` carries the answers into the run below; `decline` and `cancel`
-both stop — the research needs a scope and did not get one, and nothing is guessed in its place.
-
-**A prose table is not a call.** Listing the fields as `free text` / `choice` in the reply, or as a
-markdown table of types, sends nothing: the request above is what reaches the user. If the JSON has
-not been sent, the question has not been asked.
+| `name` | `label` | `type` | `options` / `hint` |
+|---|---|---|---|
+| `thiTruong` | Thị trường / khu vực nghiên cứu | `text` | hint `Toronto, Canada` |
+| `mtThamDinh` | Mục tiêu — Thẩm định trước khi đầu tư | `checkbox` | — |
+| `mtChonSite` | Mục tiêu — Chọn site cụ thể | `checkbox` | — |
+| `mtNhaThau` | Mục tiêu — Tìm nhà thầu / NCC | `checkbox` | — |
+| `mtDoiThu` | Mục tiêu — Khảo sát đối thủ và CPO hiện hữu | `checkbox` | — |
+| `mtPhapLy` | Mục tiêu — Tìm hiểu pháp lý và giấy phép | `checkbox` | — |
+| `phamVi` | Phạm vi địa lý | `choice` | `Toàn quốc`, `Một thành phố`, `Một cụm site` |
+| `mocThoiGian` | Mốc thời gian dữ liệu | `choice` | `Từ 2024`, `Từ 2022`, `Từ 2020`, `Không giới hạn` |
+| `doSau` | Độ sâu | `choice` | `Nhanh`, `Sâu` |
 
 **One form, not one question at a time.** A picker that walks the user through `1 of 4` is the bug
-this replaces: every missing fact goes in the single form, and nothing is asked before or after it.
+this replaces: every missing fact goes in the single `doox_form` call, and nothing is asked before or
+after it.
 
 **`Mục tiêu nghiên cứu` takes more than one answer** — thẩm định đầu tư and tìm nhà thầu are commonly
-both true, and forcing one loses scope the research needed. The elicitation schema is a flat object of
-primitives and **has no array type**, so multi-select is expressed as the five `boolean` fields above,
-one per objective — never one `enum` field, and never free text. Objectives are what the user ticks
-`true`; none ticked means ask again, not proceed.
+both true, and forcing one loses scope the research needed. Elicitation schemas hold flat primitives
+and no arrays, which is why the objectives are five `checkbox` fields rather than one multi-select.
+Objectives are the boxes that came back `true`; none ticked is asked again, not proceeded past.
 
-**A field the schema cannot express is never a reason to abandon the form.** Every property in the
-request above is already a legal elicitation primitive. If some future field is not, drop that one
-property to a `string` and keep the form — falling back to a per-question picker loses the whole form
-and is the failure this section exists to prevent.
+**Read what the tool returns before using it.** It comes back as JSON: `{"ok": true, "answers": {…}}`,
+or `{"ok": false, "reason": "…"}`.
 
-A fact the user already gave in their prompt is **not asked again** — it is pre-filled as the field's
-default, or the field is left out of the form entirely. `Hãy nghiên cứu thị trường Canada - Toronto`
-already answers the market, so that form drops the `Thị trường` field and sends the other eight.
+| Return | Do |
+|---|---|
+| `ok: true` | take the answers and start the research |
+| `ok: false`, reason names the missing `elicitation` capability | that harness cannot render a form — ask the same nine fields with its own structured-question tool (`AskUserQuestion`), all in one call, `multiSelect` for the objectives |
+| `ok: false`, `decline` or `cancel` | stop; the research needs a scope and did not get one, and nothing is guessed in its place |
 
-This form is not the identity gate of `using-doox` — `market-research` runs without that gate — and
-the two are never merged into one form.
+**The fallback is what the tool says, not a guess.** Do not skip `doox_form` on the assumption that a
+harness has no elicitation, and do not fall back because a form felt slow — the returned `reason` is
+the only thing that moves the run onto the picker.
 
-**Chat (claude.ai, Claude Code) — a picker per question is acceptable here**, since there is no form
-that holds text and choices together: `AskUserQuestion` in Claude Code, with `multiSelect` on
-`Mục tiêu nghiên cứu`. Ask them in one call where the harness allows several questions per call.
-Never a numbered list of questions in prose.
+A fact the user already gave in their prompt is **not asked again** — its field is left out of the
+call. `Hãy nghiên cứu thị trường Canada - Toronto` already answers the market, so `thiTruong` is
+dropped and the form carries eight fields.
+
+Never a numbered list of questions in prose. This form is not the identity gate of `using-doox` —
+`market-research` runs without that gate — and the two are never merged into one form.
 
 **Độ sâu mặc định là `nhanh`.** National level, one round, the budgets of section 4 — enough to fill
 the framework with sourced rows, and what `Kenya có triển khai được không` actually needs before a
@@ -232,6 +181,28 @@ block does not get filled off three searches:
 query four stops at query four — running the rest of the budget to look thorough is the second failure
 mode, and it costs the same as research.
 
+**The run has a ceiling of its own, and it is the one that binds.** Per-group budgets multiplied by ten
+groups do not fit in a session — a `sâu` run that spends 15 queries on every group exhausts the user's
+quota before Bảng 2 is filled, and delivers nothing. Count queries and documents across the whole run,
+not per group:
+
+| | Queries, whole run | Documents opened, whole run | Rounds |
+|---|---|---|---|
+| `nhanh` | 35 | 10 | 1 + one narrowing |
+| `sâu` | 80 | 24 | 2 + one narrowing on decision-grade rows |
+
+**Hitting the run ceiling ends the research, immediately and without asking.** Not a pause to check in,
+not one more group: stop searching, write what the log holds, name every row still empty as a gap, and
+say in the reply that the ceiling was reached and which groups it cut short. A report delivered at the
+ceiling with six groups sourced and four named as gaps is the success case. A run that spends two quota
+windows and delivers no file is the failure this ceiling exists to prevent, and it is the one that has
+actually happened.
+
+**Spend the ceiling in order of what the objectives asked for.** The groups feeding the picked
+`Mục tiêu` go first and get the wide budgets; the rest take what is left. A run out of budget before
+`Thời tiết, ngập, an ninh` has been touched is fine — a run that spent a third of the ceiling there
+before opening a single tariff schedule is not.
+
 **3. Search wide, then narrow.** Start with short, broad queries — long, over-specified queries return
 nothing and hide that the topic exists. Two to three keyword variants per sub-question, in the
 country's language and in English, with the local official vocabulary (`borne de recharge`,
@@ -313,7 +284,10 @@ back out for a figure when:
 | A decision-grade figure reaches `Kết luận cuối` on a tier-2 source | Push for tier 1 |
 
 **Bounded:** one targeted attempt per figure, aimed at the specific document or agency — never a
-re-run of the whole group, and it does not reopen the rounds of step 8. It fails, the figure is
+re-run of the whole group, and it does not reopen the rounds of step 8. **The pass draws on the same run
+ceiling, and gets at most a tenth of it**: with 58 rows in the framework, one attempt per doubtful
+figure is another whole run's worth of searching. Rank the triggers by how decision-grade the figure is
+and spend that tenth from the top down; what is left over is written `Chưa xác minh` with the doubt named. It fails, the figure is
 `Chưa xác minh` with the doubt written down: `nguồn X ghi 45 USD/kWh, sai đơn vị hoặc sai bậc giá, chưa
 xác minh được`. An empty row is not a trigger — that is a named gap and it stays one. Unease with no
 named trigger is not a trigger either.
@@ -414,6 +388,13 @@ a machine that has never seen the customer's own copy. Take it from there, alway
 **Copy the asset to the output path, then fill the copy.** Never write into the asset — it is the
 blank every later report starts from, and a filled one poisons the next market. The asset stays the
 reference copy of the guidance; the output file is the one that gets written over.
+
+**Copy it before the research starts, and write each group's rows the moment that group is done** —
+not once at the end. A run that researches ten groups and then writes the file has nothing on disk when
+it hits the quota ceiling of section 4, and the whole spend is lost. Filled group by group, the same
+interruption leaves a real file with six blocks sourced, and the next session reads the log and
+continues instead of starting over. The `Kết luận` blocks are the exception and go last — they are
+written from the filled blocks above them, per section 6.
 
 **The framework carries its own instructions in the cells that answers go into.** In the data rows,
 `B` onward holds the rule for what belongs there, not a value. Filling the report means **replacing
