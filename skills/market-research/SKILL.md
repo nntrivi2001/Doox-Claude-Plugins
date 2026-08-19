@@ -36,21 +36,76 @@ queries are run.
 
 ### How to ask
 
-**Cowork — one MCP elicitation form, every missing fact in it, asked once.** Cowork has MCP
-elicitation and this skill must use it. Pass `title` explicitly, set to `Nghiên cứu thị trường` — it
-is a required parameter and leaving it out fails validation, so the form never reaches the user.
+**Cowork — one MCP elicitation form, every missing fact in it, asked once.** Send an
+`elicitation/create` request whose `requestedSchema` is a flat object holding one property per missing
+fact. The client renders it as a form and returns `action: "accept"` with the filled `content`,
+`"decline"`, or `"cancel"`. Send this exact request — the `title` is required and a call without it
+fails validation, so the form never reaches the user:
 
-| Field | `type` | Options / placeholder |
-|---|---|---|
-| Thị trường / khu vực nghiên cứu | `string` | `Toronto, Canada` |
-| Mục tiêu — Thẩm định trước khi đầu tư | `boolean` | mặc định `false` |
-| Mục tiêu — Chọn site cụ thể | `boolean` | mặc định `false` |
-| Mục tiêu — Tìm nhà thầu / NCC | `boolean` | mặc định `false` |
-| Mục tiêu — Khảo sát đối thủ và CPO hiện hữu | `boolean` | mặc định `false` |
-| Mục tiêu — Tìm hiểu pháp lý và giấy phép | `boolean` | mặc định `false` |
-| Phạm vi địa lý | `string` + `enum` | `Toàn quốc`, `Một thành phố`, `Một cụm site` |
-| Mốc thời gian dữ liệu | `string` + `enum` | `Từ 2024`, `Từ 2022`, `Từ 2020`, `Không giới hạn` |
-| Độ sâu | `string` + `enum` | `Nhanh (mặc định)`, `Sâu` |
+```json
+{
+  "message": "Nghiên cứu thị trường",
+  "title": "Nghiên cứu thị trường",
+  "requestedSchema": {
+    "type": "object",
+    "properties": {
+      "thiTruong": {
+        "type": "string",
+        "title": "Thị trường / khu vực nghiên cứu",
+        "description": "Toronto, Canada"
+      },
+      "mtThamDinh": {
+        "type": "boolean",
+        "title": "Mục tiêu — Thẩm định trước khi đầu tư",
+        "default": false
+      },
+      "mtChonSite": {
+        "type": "boolean",
+        "title": "Mục tiêu — Chọn site cụ thể",
+        "default": false
+      },
+      "mtNhaThau": {
+        "type": "boolean",
+        "title": "Mục tiêu — Tìm nhà thầu / NCC",
+        "default": false
+      },
+      "mtDoiThu": {
+        "type": "boolean",
+        "title": "Mục tiêu — Khảo sát đối thủ và CPO hiện hữu",
+        "default": false
+      },
+      "mtPhapLy": {
+        "type": "boolean",
+        "title": "Mục tiêu — Tìm hiểu pháp lý và giấy phép",
+        "default": false
+      },
+      "phamVi": {
+        "type": "string",
+        "title": "Phạm vi địa lý",
+        "enum": ["Toàn quốc", "Một thành phố", "Một cụm site"]
+      },
+      "mocThoiGian": {
+        "type": "string",
+        "title": "Mốc thời gian dữ liệu",
+        "enum": ["Từ 2024", "Từ 2022", "Từ 2020", "Không giới hạn"]
+      },
+      "doSau": {
+        "type": "string",
+        "title": "Độ sâu",
+        "enum": ["Nhanh", "Sâu"]
+      }
+    },
+    "required": ["thiTruong", "phamVi", "mocThoiGian", "doSau"]
+  }
+}
+```
+
+Handle the three outcomes: `accept` carries the answers into the run below; `decline` and `cancel`
+both stop — the research needs a scope and did not get one, and nothing is guessed in its place.
+
+**A prose table is not a call.** Listing the fields as `free text` / `choice` in the reply, or as a
+markdown table of types, sends nothing: the request above is what reaches the user. If the JSON has
+not been sent, the question has not been asked.
 
 **One form, not one question at a time.** A picker that walks the user through `1 of 4` is the bug
 this replaces: every missing fact goes in the single form, and nothing is asked before or after it.
@@ -61,10 +116,10 @@ primitives and **has no array type**, so multi-select is expressed as the five `
 one per objective — never one `enum` field, and never free text. Objectives are what the user ticks
 `true`; none ticked means ask again, not proceed.
 
-**A field the schema cannot express is never a reason to abandon the form.** Every field in the table
-above is already a legal elicitation primitive. If some future field is not, drop that one field to a
-`string` and keep the form — falling back to a per-question picker loses the whole form and is the
-failure this section exists to prevent.
+**A field the schema cannot express is never a reason to abandon the form.** Every property in the
+request above is already a legal elicitation primitive. If some future field is not, drop that one
+property to a `string` and keep the form — falling back to a per-question picker loses the whole form
+and is the failure this section exists to prevent.
 
 A fact the user already gave in their prompt is **not asked again** — it is pre-filled as the field's
 default, or the field is left out of the form entirely. `Hãy nghiên cứu thị trường Canada - Toronto`
