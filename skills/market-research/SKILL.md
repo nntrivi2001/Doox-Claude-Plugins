@@ -19,26 +19,60 @@ answered with the evidence a human needs to answer it, not with a yes or a no �
 This skill reads no plan file and writes to none. It does not need the identity gate of `using-doox`
 — nobody's rows are being shown — and it runs the same for a `Project Manager` and a `Chuyên gia`.
 
-## 2. The intake — four facts, asked before researching
+## 2. The intake — five facts, asked before researching
 
 Required every run:
 
 | Fact | Example |
 |---|---|
 | Thị trường / khu vực | `Côte d'Ivoire`, `Abidjan` |
-| Mục tiêu nghiên cứu | thẩm định trước khi đầu tư, chọn site, tìm nhà thầu |
+| Mục tiêu nghiên cứu | thẩm định trước khi đầu tư, chọn site, tìm nhà thầu — **có thể chọn nhiều** |
 | Phạm vi địa lý | toàn quốc / một thành phố / một cụm site |
 | Mốc thời gian dữ liệu | dữ liệu từ năm nào trở lại đây được coi là còn dùng được |
 | Độ sâu | `nhanh` (mặc định) hoặc `sâu` |
 
-Missing any of them: ask, the way the harness asks (`using-doox`, "How to ask depends on the
-harness" — Cowork one elicitation form, chat plain text). Do not start researching on the market name
-alone and fill the rest in later; the scope decides which queries are run.
+Do not start researching on the market name alone and fill the rest in later; the scope decides which
+queries are run.
+
+### How to ask
+
+**Cowork — one MCP elicitation form, every missing fact in it, asked once.** Cowork has MCP
+elicitation and this skill must use it. Pass `title` explicitly, set to `Nghiên cứu thị trường` — it
+is a required parameter and leaving it out fails validation, so the form never reaches the user.
+
+| Field | Type | Options / placeholder |
+|---|---|---|
+| Thị trường / khu vực nghiên cứu | free text | `Toronto, Canada` |
+| Mục tiêu nghiên cứu (chọn nhiều được) | **multi-select** | `Thẩm định trước khi đầu tư`, `Chọn site cụ thể`, `Tìm nhà thầu / NCC`, `Khảo sát đối thủ và CPO hiện hữu`, `Tìm hiểu pháp lý và giấy phép` |
+| Phạm vi địa lý | choice | `Toàn quốc`, `Một thành phố`, `Một cụm site` |
+| Mốc thời gian dữ liệu | choice | `Từ 2024`, `Từ 2022`, `Từ 2020`, `Không giới hạn` |
+| Độ sâu | choice | `Nhanh (mặc định)`, `Sâu` |
+
+**One form, not one question at a time.** A picker that walks the user through `1 of 4` is the bug
+this replaces: every missing fact goes in the single form, and nothing is asked before or after it.
+
+**`Mục tiêu nghiên cứu` takes more than one answer** — thẩm định đầu tư and tìm nhà thầu are commonly
+both true, and forcing one loses scope the research needed. Where the elicitation schema expresses
+multi-select as an array of enum values, use that; where it does not, the field is free text with the
+options listed in its description, never a single-choice picker.
+
+A fact the user already gave in their prompt is **not asked again** — it is pre-filled as the field's
+default, or the field is left out of the form entirely. `Hãy nghiên cứu thị trường Canada - Toronto`
+already answers the market, so that form asks four fields, not five.
+
+This form is not the identity gate of `using-doox` — `market-research` runs without that gate — and
+the two are never merged into one form.
+
+**Chat (claude.ai, Claude Code) — a picker per question is acceptable here**, since there is no form
+that holds text and choices together: `AskUserQuestion` in Claude Code, with `multiSelect` on
+`Mục tiêu nghiên cứu`. Ask them in one call where the harness allows several questions per call.
+Never a numbered list of questions in prose.
 
 **Độ sâu mặc định là `nhanh`.** National level, one round, the budgets of section 4 — enough to fill
 the framework with sourced rows, and what `Kenya có triển khai được không` actually needs before a
-human looks at it. `sâu` is the full pass and runs
-only when the user asks for it or the objective is site selection, đấu thầu or an investment decision.
+human looks at it. `sâu` is the full pass and runs only when the user asks for it or **any one of the
+objectives picked** is site selection, đấu thầu or an investment decision — with several objectives
+selected it is the most demanding one that sets the depth, not the first in the list.
 Say which mode ran, and offer to escalate a `nhanh` report afterwards rather than guessing high. The
 mode sets the budget and the number of rounds, never the sourcing rules of section 3.
 
