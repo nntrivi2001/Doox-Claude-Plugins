@@ -252,22 +252,54 @@ interrupted, from the beginning.
 
 **How to ask depends on the harness.** Never a numbered list of questions in prose, in either case.
 
-**Cowork — one form, all three fields.** Cowork has MCP elicitation and must use it (it asks nothing
-in prose). Pass `title` explicitly on the call, set to `Người dùng` — it is a required parameter and
-leaving it out fails validation, so the form never reaches the user. Put every missing fact in that
-single form, then wait for it to come back filled:
+**Cowork — one form, all three fields.** Send an `elicitation/create` request whose `requestedSchema`
+is a flat object holding one property per missing fact, then wait for it to come back filled. Send
+this exact request — the `title` is required and a call without it fails validation, so the form
+never reaches the user:
 
-| Field | Type | Placeholder / options |
-|---|---|---|
-| Họ và tên của bạn | free text | `Nguyễn Văn A` |
-| Email của bạn | free text | `ban@example.com` |
-| Vai trò / chức vụ của bạn? | choice | `Project Manager`, `Chuyên gia` |
+```json
+{
+  "message": "Người dùng",
+  "title": "Người dùng",
+  "requestedSchema": {
+    "type": "object",
+    "properties": {
+      "hoTen": {
+        "type": "string",
+        "title": "Họ và tên của bạn",
+        "description": "Nguyễn Văn A"
+      },
+      "email": {
+        "type": "string",
+        "format": "email",
+        "title": "Email của bạn",
+        "description": "ban@example.com"
+      },
+      "vaiTro": {
+        "type": "string",
+        "title": "Vai trò / chức vụ của bạn?",
+        "enum": ["Project Manager", "Chuyên gia"]
+      }
+    },
+    "required": ["hoTen", "email", "vaiTro"]
+  }
+}
+```
 
 That order is fixed: the role goes last, after the two text fields — not first.
 
-**All three fields go in, in that order.** Email is a field of its own and is dropped the most often
-— a form showing `Họ và tên` and `Vai trò` but no `Email` is broken and has to be asked again. Count
-the fields against the table before sending the form.
+**All three properties go in, in that order.** `email` is a property of its own and is dropped the
+most often — a form showing `Họ và tên` and `Vai trò` but no `Email` is broken and has to be asked
+again. Count the properties against the request above before sending it. The `description` strings
+are hints shown in the field, not defaults: a field left untouched comes back absent, never as its
+hint.
+
+**A prose table is not a call.** Listing the fields as `free text` / `choice` in the reply, or as a
+markdown table of types, sends nothing: the request above is what reaches the user. If the JSON has
+not been sent, the question has not been asked.
+
+Handle the three outcomes: `accept` carries the answers into the checks below; `decline` and `cancel`
+both stop — the run needs an identity and did not get one, and nothing is guessed in its place.
 
 **Chat (claude.ai, Claude Code) — two steps.** No form holding text fields and a choice together, so
 split it.
@@ -347,12 +379,34 @@ Two or more matched, or none did — ask, with a picker.
 
 **The picker offers the likeliest candidates, not the whole list.** Rank by how close each PIC is to
 the email local part and the name — shared prefix, shared digits, edit distance — and offer the top
-few, plus the harness's own free-text escape. Only when nothing resembles the user at all does the
-picker fall back to every PIC found in the files.
+few, plus the harness's own free-text escape. An elicitation `enum` has no such escape, so there the
+candidate list carries a last option of `Khác` and the answer to that is asked again as a text
+property. Only when nothing resembles the user at all does the picker fall back to every PIC found in
+the files.
 
-The question is bare: `PIC của bạn là gì?` — and in Cowork this picker is an elicitation call too,
-so it carries a `title` of `Người dùng` like the identity form. Do not explain why the automatic
-match failed, do not
+The question is bare: `PIC của bạn là gì?` — and in Cowork this picker is an `elicitation/create`
+call too, one property, its `enum` filled with the candidates ranked above:
+
+```json
+{
+  "message": "Người dùng",
+  "title": "Người dùng",
+  "requestedSchema": {
+    "type": "object",
+    "properties": {
+      "pic": {
+        "type": "string",
+        "title": "PIC của bạn là gì?",
+        "enum": ["PIC-01", "PIC-07", "PIC-12", "Khác"]
+      }
+    },
+    "required": ["pic"]
+  }
+}
+```
+
+Those three values are a shape, not a list to send: the `enum` holds the candidates this run actually
+ranked. Do not explain why the automatic match failed, do not
 say the file carries no email or name beside the PIC, do not describe what was searched — that
 narrates the file's structure and tells the user which answer would have worked.
 
