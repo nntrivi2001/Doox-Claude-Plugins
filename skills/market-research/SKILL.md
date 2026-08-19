@@ -40,25 +40,35 @@ queries are run.
 elicitation and this skill must use it. Pass `title` explicitly, set to `Nghiên cứu thị trường` — it
 is a required parameter and leaving it out fails validation, so the form never reaches the user.
 
-| Field | Type | Options / placeholder |
+| Field | `type` | Options / placeholder |
 |---|---|---|
-| Thị trường / khu vực nghiên cứu | free text | `Toronto, Canada` |
-| Mục tiêu nghiên cứu (chọn nhiều được) | **multi-select** | `Thẩm định trước khi đầu tư`, `Chọn site cụ thể`, `Tìm nhà thầu / NCC`, `Khảo sát đối thủ và CPO hiện hữu`, `Tìm hiểu pháp lý và giấy phép` |
-| Phạm vi địa lý | choice | `Toàn quốc`, `Một thành phố`, `Một cụm site` |
-| Mốc thời gian dữ liệu | choice | `Từ 2024`, `Từ 2022`, `Từ 2020`, `Không giới hạn` |
-| Độ sâu | choice | `Nhanh (mặc định)`, `Sâu` |
+| Thị trường / khu vực nghiên cứu | `string` | `Toronto, Canada` |
+| Mục tiêu — Thẩm định trước khi đầu tư | `boolean` | mặc định `false` |
+| Mục tiêu — Chọn site cụ thể | `boolean` | mặc định `false` |
+| Mục tiêu — Tìm nhà thầu / NCC | `boolean` | mặc định `false` |
+| Mục tiêu — Khảo sát đối thủ và CPO hiện hữu | `boolean` | mặc định `false` |
+| Mục tiêu — Tìm hiểu pháp lý và giấy phép | `boolean` | mặc định `false` |
+| Phạm vi địa lý | `string` + `enum` | `Toàn quốc`, `Một thành phố`, `Một cụm site` |
+| Mốc thời gian dữ liệu | `string` + `enum` | `Từ 2024`, `Từ 2022`, `Từ 2020`, `Không giới hạn` |
+| Độ sâu | `string` + `enum` | `Nhanh (mặc định)`, `Sâu` |
 
 **One form, not one question at a time.** A picker that walks the user through `1 of 4` is the bug
 this replaces: every missing fact goes in the single form, and nothing is asked before or after it.
 
 **`Mục tiêu nghiên cứu` takes more than one answer** — thẩm định đầu tư and tìm nhà thầu are commonly
-both true, and forcing one loses scope the research needed. Where the elicitation schema expresses
-multi-select as an array of enum values, use that; where it does not, the field is free text with the
-options listed in its description, never a single-choice picker.
+both true, and forcing one loses scope the research needed. The elicitation schema is a flat object of
+primitives and **has no array type**, so multi-select is expressed as the five `boolean` fields above,
+one per objective — never one `enum` field, and never free text. Objectives are what the user ticks
+`true`; none ticked means ask again, not proceed.
+
+**A field the schema cannot express is never a reason to abandon the form.** Every field in the table
+above is already a legal elicitation primitive. If some future field is not, drop that one field to a
+`string` and keep the form — falling back to a per-question picker loses the whole form and is the
+failure this section exists to prevent.
 
 A fact the user already gave in their prompt is **not asked again** — it is pre-filled as the field's
 default, or the field is left out of the form entirely. `Hãy nghiên cứu thị trường Canada - Toronto`
-already answers the market, so that form asks four fields, not five.
+already answers the market, so that form drops the `Thị trường` field and sends the other eight.
 
 This form is not the identity gate of `using-doox` — `market-research` runs without that gate — and
 the two are never merged into one form.
