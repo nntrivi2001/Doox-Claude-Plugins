@@ -13,6 +13,9 @@ The user names a target market and asks to research it: `nghiên cứu thị tr�
 Output: **a new `.xlsx` built from the saved framework**, filled. Not a chat report, not an investment
 memo, not a business case — the framework's tables and nothing beyond them unless the user asks.
 
+**It is a sourced picture of the market, not a decision.** `Bờ Biển Ngà có triển khai được không` is
+answered with the evidence a human needs to answer it, not with a yes or a no — see section 6.
+
 This skill reads no plan file and writes to none. It does not need the identity gate of `using-doox`
 — nobody's rows are being shown — and it runs the same for a `Project Manager` and a `Chuyên gia`.
 
@@ -32,8 +35,9 @@ Missing any of them: ask, the way the harness asks (`using-doox`, "How to ask de
 harness" — Cowork one elicitation form, chat plain text). Do not start researching on the market name
 alone and fill the rest in later; the scope decides which queries are run.
 
-**Độ sâu mặc định là `nhanh`.** It answers the go/no-go — national level, one round, the budgets of
-section 4 — and is what `Kenya có triển khai được không` actually needs. `sâu` is the full pass and runs
+**Độ sâu mặc định là `nhanh`.** National level, one round, the budgets of section 4 — enough to fill
+the framework with sourced rows, and what `Kenya có triển khai được không` actually needs before a
+human looks at it. `sâu` is the full pass and runs
 only when the user asks for it or the objective is site selection, đấu thầu or an investment decision.
 Say which mode ran, and offer to escalate a `nhanh` report afterwards rather than guessing high. The
 mode sets the budget and the number of rounds, never the sourcing rules of section 3.
@@ -68,10 +72,11 @@ stands, and the disagreement is written down per section 5.
 
 Plus any external document the user hands over, and the saved report framework as the structure.
 
-**Every figure that matters carries its source and the date it was published**, in the framework's
-`Cơ sở dữ liệu (cách tính + nguồn)` column: source name, URL, publication date, and the condition it
-applies under. A figure with no credible source is written `Chưa xác minh` — not dropped, not
-softened into prose.
+**Every figure that matters carries its source and the date it was published**, inside the cell, in
+the result format the framework's `00 - Hướng dẫn` sheet fixes — `Kết quả | Trạng thái | Phạm vi,
+đơn vị, kỳ dữ liệu | Nguồn và ngày | Phương pháp/giả định | Giới hạn | Hành động xác minh`. The
+framework has no separate source column; a figure and its provenance travel in one cell. A figure
+with no credible source is written `Chưa xác minh` — not dropped, not softened into prose.
 
 **Decision-grade data is verified twice.** Giá điện, giấy phép, thời gian đấu nối, thuế, số
 trạm/CPO, chi phí: an official source, or — when the official one is not public — two independent
@@ -86,16 +91,19 @@ Split the research by group and run it group by group, not as one broad query:
 
 | Group | Feeds |
 |---|---|
-| Thị trường EV và đội xe | Bảng 1 |
-| Nhu cầu sạc | Bảng 1 |
-| Khu vực / site | Bảng 1, Kết luận cuối |
-| Điện và utility | Bảng 1, Bảng 4 |
-| Pháp lý và permit | Bảng 2, Kết luận pháp lý |
-| CPO hiện hữu | Bảng 1, Bảng 3 |
-| Nhà thầu, NCC, logistics, đối tác địa phương | Bảng 3 |
-| Chi phí (CAPEX/OPEX) | Bảng 4, Kết luận cuối |
-| Internet và payment | Bảng 1, Bảng 3 |
-| Thời tiết, ngập, an ninh | Bảng 1, Bảng 4 |
+| Thị trường EV và đội xe | Bảng 1 (dòng 3–4) |
+| Hạ tầng sạc hiện hữu và chuẩn kỹ thuật | Bảng 1 (dòng 5–6) |
+| Đặc tính xe — pin, tiêu thụ, khả năng sạc | Bảng 1 (dòng 7–8) |
+| Điện và utility | Bảng 1 (dòng 9), Bảng 4, Kết luận cuối |
+| Pháp lý và permit | Bảng 2, Bảng 4, Kết luận pháp lý, Kết luận cuối |
+| CPO hiện hữu | Bảng 1 (dòng 5), Bảng 3 |
+| Nhà thầu, NCC, logistics, đối tác địa phương | Bảng 3, Bảng 4, Kết luận cuối |
+| Internet và payment | Bảng 1 (dòng 10–11), Bảng 3, Bảng 4 |
+| Thời tiết, ngập, an ninh | Bảng 1 (dòng 12–13), Bảng 4 |
+| Chi phí và tỷ giá | Bảng 4, Kết luận cuối (rủi ro chi phí) |
+
+Bảng 1 dòng 14 (`Kết luận tổng quan và nhu cầu sạc`) is not a research group — it is written from the
+groups above once they are filled, per section 6, and it is where `khu vực ưu tiên` lands.
 
 A group the scope of section 2 puts out of reach is skipped **and named as skipped**, never silently
 dropped.
@@ -112,8 +120,8 @@ dụng cho trạm sạc thuộc nhóm khách hàng nào; công suất khả dụ
 gian đấu nối; tần suất mất điện; điều kiện kỹ thuật của utility. Vague sub-questions produce vague
 searches.
 
-**2. Scale the effort to the question.** Cheap facts do not deserve a campaign, and a market
-readiness call does not survive three searches:
+**2. Scale the effort to the question.** Cheap facts do not deserve a campaign, and a whole framework
+block does not get filled off three searches:
 
 | Question | `nhanh` | `sâu` |
 |---|---|---|
@@ -203,7 +211,7 @@ back out for a figure when:
 | A decision-grade figure rests on one source — giá điện, giấy phép, thời gian đấu nối, thuế, chi phí — and step 8 did not already go after it | One more independent source, or the official one directly |
 | The log line has no date, no condition, or a condition that does not fit the use — wrong customer class, wrong voltage band, wrong year | Re-open that same source for the missing condition |
 | A figure is off by an order of magnitude, or the unit looks converted wrong — kW vs kWh, per trạm vs per trụ | Verify at source before it reaches a cell |
-| The figure decides `Mức độ sẵn sàng chung` and its source is tier 2 | Push for tier 1 |
+| A decision-grade figure reaches `Kết luận cuối` on a tier-2 source | Push for tier 1 |
 
 **Bounded:** one targeted attempt per figure, aimed at the specific document or agency — never a
 re-run of the whole group, and it does not reopen the rounds of step 8. It fails, the figure is
@@ -212,8 +220,8 @@ xác minh được`. An empty row is not a trigger — that is a named gap and i
 named trigger is not a trigger either.
 
 Keep an evidence log throughout — `nguồn | cấp 1/2 | URL | ngày công bố | số liệu lấy ra | điều kiện
-áp dụng | ô nào dùng` — one line per source used. It fills the `Cơ sở dữ liệu (cách tính + nguồn)`
-column and it is what makes a figure checkable six months later.
+áp dụng | ô nào dùng` — one line per source used. It is what the `Nguồn và ngày` and `Giới hạn` parts
+of every cell are written from, and what makes a figure checkable six months later.
 
 **The log lives on disk while the research runs**, not in the conversation: a folder
 `Nguồn báo cáo thị trường [Thị trường] dd_mm_yyyy/` beside the output file, named to pair with it, one
@@ -225,11 +233,12 @@ second market report can be told to reuse a log that is still inside the mốc t
 
 **No disk in this harness** — then the log comes back in the agents' replies and is kept as the single
 newest message of the run; nothing is re-quoted from it as it grows, and it reaches the deliverable the
-same way it always does — through the `Cơ sở dữ liệu (cách tính + nguồn)` column of section 7.
+same way it always does — through the `Nguồn và ngày` part of every cell written in section 7.
 
-**The bar for calling the report done:** every row of Bảng 1–4 worked, each group resting on tier-1/2
-sources or on a written gap, no decision-grade figure standing on a single source without that being
-said, and a methodology note in the reply — độ sâu đã chạy (`nhanh`/`sâu`), số truy vấn, số nguồn, số
+**The bar for calling the report done:** every row of Bảng 1–4 worked and no cell still carrying the
+blank's instruction text, each group resting on tier-1/2 sources or on a written gap, no
+decision-grade figure standing on a single source without that being said, and a methodology note in
+the reply — độ sâu đã chạy (`nhanh`/`sâu`), số truy vấn, số nguồn, số
 vòng, nhóm nào thiếu dữ liệu, và — sau một run `nhanh` — những ô nào một run `sâu` có thể lấp được.
 
 ## 5. Normalising before comparing
@@ -237,17 +246,20 @@ vòng, nhóm nào thiếu dữ liệu, và — sau một run `nhanh` — những
 Currency, kW vs kWh, time, tax and fee basis, geographic scope — normalise all of them before two
 numbers are put in the same table. State the rate and the date used for any currency conversion.
 
-**Three kinds of content, never blurred:**
+**Four statuses, never blurred — the framework's own, from its `00 - Hướng dẫn` sheet.** Every result
+carries exactly one of them, written in the cell:
 
-| Label | Meaning |
-|---|---|
-| Đã xác minh | from a source of tier 1–4, cited |
-| Ước tính | computed by us — the formula and every input is written next to it |
-| Nhận định | our reading of the evidence, not a figure anyone published |
+| Trạng thái | Khi dùng | Bắt buộc kèm |
+|---|---|---|
+| `Đã xác minh` | nguồn cấp 1–2, trực tiếp, còn hiệu lực | kết quả, phạm vi, nguồn/URL, ngày công bố hoặc truy cập |
+| `Ước tính` | tính hoặc suy ra từ dữ liệu có căn cứ | công thức, đầu vào, giả định, khoảng giá trị, giới hạn |
+| `Chưa xác minh` | không có dữ liệu công khai đủ tin cậy, hoặc cần xác nhận tại chỗ | dữ liệu cần lấy, đơn vị xác nhận, ảnh hưởng — **không điền số giả định** |
+| `Không áp dụng` | có căn cứ rõ rằng chỉ tiêu không áp dụng cho phạm vi này | căn cứ — không dùng chỉ vì không tìm thấy thông tin |
 
-Anything with no basis at all is `Chưa xác minh` or `Chưa đủ dữ liệu`, and blank is an acceptable
-cell. **A guess is labelled `phỏng đoán` in the cell itself** — a plausible unlabelled number is the
-one failure mode of this report.
+`Không áp dụng` is the one that gets abused: not finding something is `Chưa xác minh`, never
+`Không áp dụng`. **A guess is never written at all** — a plausible unlabelled number is the one
+failure mode of this report. Where the reading is ours rather than anyone's published figure, say so
+in the cell as a `nhận định` and keep it separate from the figure it rests on.
 
 Consistency checks before writing: quy mô xe ↔ nhu cầu sạc; số trạm ↔ số CPO; giá điện ↔ nhóm khách
 hàng áp dụng; giấy phép ↔ mô hình kinh doanh; chi phí ↔ phạm vi BOQ. A pair that does not add up is
@@ -259,42 +271,71 @@ used downstream. Never silently pick one.
 **Never turn a national figure into a city conclusion**, and never fill a gap with a hidden
 assumption. Where an estimate is unavoidable, give a range and the basis for it.
 
-## 6. Analysis — link the groups, do not list them
+## 6. Analysis — enough to connect the rows, and no further
 
-A list of facts is not the deliverable. The links that are:
+**The deliverable is the information, not a verdict.** This framework produces a sourced picture of a
+market for a human to judge — it does not decide anything. There is no `Mức độ sẵn sàng chung`, no
+site readiness call, no CAPEX/OPEX total, no recommendation: those rows were deliberately removed
+from the framework because the data behind them cannot be got from public sources. Do not reintroduce
+them, and do not add a row, table or closing paragraph that answers `có nên vào thị trường này không`.
 
-| Inputs | Conclusion to reach |
+What the framework does still ask for is the links between groups, because a few of its rows cannot
+be filled from one group alone:
+
+| Inputs | The row it fills |
 |---|---|
-| Nhu cầu xe + hành vi vận hành + điện | công suất và số trụ cần |
-| Khu vực/site + điện + pháp lý + chi phí | mức độ phù hợp và thứ tự ưu tiên khu vực |
-| Utility + thiếu công suất + thời gian nâng cấp | rủi ro cấp điện |
-| Permit + điều kiện đầu vào + thời gian xử lý | thủ tục nào thành đường găng |
-| Nhà thầu + NCC + logistics + CPO + đối tác | năng lực triển khai tại chỗ, khoảng trống nguồn lực |
-| CAPEX/OPEX + tỷ giá + logistics + utility | khoảng chi phí thực tế và mức độ chắc chắn |
-| tất cả các nhóm trên | rủi ro làm chậm tiến độ hoặc tăng chi phí |
+| Utility + biểu giá + thủ tục đấu nối | Bảng 4 `Điện và lưới điện`, Kết luận cuối `Khả năng đáp ứng của hạ tầng điện` |
+| Permit + điều kiện đầu vào + thời gian xử lý | Bảng 4 `Pháp lý và giấy phép`, Kết luận cuối `Thủ tục pháp lý có nguy cơ làm chậm dự án` |
+| Nhà thầu + NCC + logistics + CPO + đối tác | Bảng 4 `Nhà thầu` / `Nhà cung cấp và thiết bị`, Kết luận cuối `Nhà thầu phù hợp sơ bộ` |
+| Quy mô xe + hạ tầng sạc hiện hữu + điện + an ninh/khí hậu | Bảng 1 `Kết luận tổng quan`, Kết luận cuối `Đặc điểm thị trường ảnh hưởng lớn nhất` |
+| Tỷ giá + logistics + utility + nhà thầu | Kết luận cuối `Rủi ro lớn nhất đối với chi phí` |
 
-Every conclusion is written as **nguyên nhân → tác động → mức độ chắc chắn**.
+Each of these is written as **nguyên nhân → tác động → mức độ chắc chắn**, capped at the 3–5
+findings the framework asks for, every one resting on a cell already filled above it. A finding that
+cannot be traced back to a filled row does not go in.
 
-Score or rank a site only when the framework's minimum data for it exists — otherwise say which data
-is missing and leave the ranking out. Assess a contractor, supplier or partner from public evidence
-or the user's documents only: **never infer financial or technical capacity from the absence of a
-record.**
+`Nhà thầu phù hợp sơ bộ` is a shortlist with evidence and gaps — explicitly **not** a selection.
+Assess a contractor, supplier or partner from public evidence or the user's documents only: **never
+infer financial or technical capacity from the absence of a record.**
+
+**Khu vực ưu tiên is asked for and a site call is not** — the distinction the framework draws at
+dòng 14, and the one place this section still ranks anything. A region may be put ahead of another on
+public evidence (xe và đội xe, hạ tầng sạc hiện hữu, điện, an ninh), with the evidence named. A
+specific địa điểm is never called ready or suitable: quyền sử dụng đất, công suất điện tại chỗ and
+pháp lý decide that and none of the three is public. Name them as what the user has to confirm
+offline.
 
 ## 7. The output file
 
 **The blank framework ships with this skill**: `assets/khung-bao-cao-thi-truong.xlsx`, next to this
-file — one sheet, `Khung báo cáo thị trường mẫu`, the customer's structure, empty. It travels with
-the plugin, so the report can be produced on a machine that has never seen the customer's own copy.
-Take it from there, always.
+file — two sheets, `Khung báo cáo thị trường mẫu` (the customer's structure) and `00 - Hướng dẫn`
+(the rules every cell is written under). It travels with the plugin, so the report can be produced on
+a machine that has never seen the customer's own copy. Take it from there, always.
 
 **Copy the asset to the output path, then fill the copy.** Never write into the asset — it is the
-blank every later report starts from, and a filled one poisons the next market.
+blank every later report starts from, and a filled one poisons the next market. The asset stays the
+reference copy of the guidance; the output file is the one that gets written over.
 
-If the project folder happens to carry the customer's own `Khung báo cáo thị trường.xlsx` and its
-framework sheet differs from the asset — a row added, a table retitled — **the customer's file wins**:
-copy that sheet instead and say in the reply which one was used. Their template is the deliverable's
-shape; ours is the portable fallback. Its second sheet, `Mẫu khung thực tế`, is a filled example of
-the expected depth and tone: read it for calibration, never carry it into the output.
+**The framework carries its own instructions in the cells that answers go into.** In the data rows,
+`B` onward holds the rule for what belongs there, not a value. Filling the report means **replacing
+that instruction text with the answer** — that is intended, the guidance lives on in the asset and in
+`00 - Hướng dẫn`, which is copied across untouched and never filled. A cell that still contains its
+original instruction text at the end is an unfilled cell, and counts as one.
+
+**Not every cell is a data row.** Rows 2, 16, 27 and 36 are column headers, rows 15, 26, 35, 47 and 51
+are block titles, and `B47` / `B51` carry the result format for the two conclusion blocks. None of
+them is written to. `B46` does not exist as a cell — it is merged into `A46` — so the `Tổng kết` row
+of Bảng 4 is filled at `C`–`F` only, and writing `B46` fails.
+
+Because those instructions repeat identically down each column of Bảng 2, 3 and 4, they do not need
+reading row by row — the column rules are restated once in the layout below. Copy the asset with a
+file copy, write into cells, and never pull the blank's instruction text into the conversation.
+
+If the project folder happens to carry the customer's own framework file and its `Khung báo cáo thị
+trường mẫu` sheet differs from the asset — a row added, a table retitled — **the customer's file
+wins**: copy that file instead and say in the reply which one was used. Their template is the
+deliverable's shape; ours is the portable fallback. Check the row numbers of the layout table below
+against whichever file was copied before writing a single cell.
 
 Name the output `Báo cáo thị trường [Thị trường] dd_mm_yyyy.xlsx`, in the project folder —
 `Báo cáo thị trường Bo Bien Nga 11_08_2026.xlsx`. Underscores in the date, and **no ` - ` anywhere in
@@ -303,29 +344,42 @@ the name**: a name with two ` - ` separators is read as a plan file by every oth
 folder of section 4 sits beside it under the matching name, and the same ` - ` rule holds for the files
 inside it.
 
-The framework's own layout, to fill in place — do not renumber, retitle or reorder it:
+The framework's own layout, to fill in place — do not renumber, retitle or reorder it. Column `A`
+always holds the group name and is never written to:
 
-| Block | Rows | What goes in |
-|---|---|---|
-| Bảng 1 — Tổng quan thị trường và nhu cầu sạc | 3–15 | `C` = dữ liệu hiện tại, `D` = cách tính + nguồn |
-| Bảng 2 — Pháp lý, giấy phép, thủ tục | 18–26 | `B`–`F`, `H` (`A`, `G` already carry the procedure and its dependants) |
-| Bảng 3 — Nhà thầu, NCC, đối tác địa phương | 29–37 | `B`, `D`, `E`, `H`; `C`, `F`, `G` hold the questions to answer |
-| Bảng 4 — Rủi ro và mức độ sẵn sàng | 40–50 | `B`–`H`, one row per risk group already named in `A` |
-| Kết luận pháp lý | 52–57 | `B` |
-| Kết luận phân tích cuối cùng | 59–72 | `B` |
+| Block | Rows | Cells to fill | The column rule, stated once |
+|---|---|---|---|
+| Bảng 1 — Tổng quan thị trường và nhu cầu sạc | 3–14 | `B`, `C` | `B` = nội dung đầu ra (the bullets that row asks for); `C` = kiểm chứng — phạm vi, đơn vị, kỳ dữ liệu, nguồn/URL và ngày, giới hạn |
+| Bảng 2 — Pháp lý, giấy phép, thủ tục | 17–25 | `B`–`E` | `B` cơ quan xử lý + URL chính thức; `C` tên/số văn bản, điều khoản, ngày hiệu lực, hồ sơ và thứ tự; `D` thời gian xử lý — công bố hay thực tế, có nguồn; `E` phí chính thức, tách riêng chi phí tư vấn |
+| Bảng 3 — Nhà thầu, NCC, đối tác địa phương | 28–34 | `B`–`F` | `B` 3–5 đơn vị, tên pháp lý + website + liên hệ; `C` phạm vi cung cấp; `D` pháp lý/chứng nhận có tên, số, đơn vị cấp, hiệu lực; `E` dự án tham chiếu có địa điểm, năm, nguồn; `F` năng lực và hiện diện địa phương |
+| Bảng 4 — Rủi ro và kế hoạch xác minh | 37–45 | `B`–`F` | `B` rủi ro viết theo nguyên nhân – sự kiện – hậu quả; `C` khả năng xảy ra; `D` tác động tiến độ; `E` tác động chi phí; `F` khả năng kiểm soát + biện pháp |
+| Bảng 4 — dòng `Tổng kết` | 46 | `C`–`F` only | `B46` is merged into `A46` and cannot be written |
+| Kết luận pháp lý | 48–50 | `B` | mỗi ô: kết luận \| trạng thái \| nguồn và ngày \| giới hạn \| hành động xác minh |
+| Kết luận phân tích cuối cùng | 52–58 | `B` | mỗi ô: kết luận \| trạng thái \| nguồn và ngày \| giới hạn \| bước tiếp theo |
+
+`C` and `F` of Bảng 4 take `Cao` / `Trung bình` / `Thấp` — or `Chưa đủ dữ liệu`, which is the right
+answer far more often than it feels, and a level is only picked when the evidence for it is named in
+the same cell. `D` and `E` want a quantity first — số ngày/tuần, khoảng tiền or % ngân sách — and
+fall back to the same levels only when there is no data to quantify with.
 
 More than one unit per row — several contractors in a group, several risks in a group — means
 **inserting rows inside that block**, keeping the group name in `A`. Never overwrite a neighbouring
 block, never append a table of your own at the bottom.
 
-**Every table carries data, source and a nhận định.** An empty table is not shipped; a table with
-nothing verified says `Chưa đủ dữ liệu` in its rows and why. Blank cells are allowed where nothing is
-known — generic filler prose is not.
+**Insertion breaks every row number below it, so leave it to the end.** Write all the fixed rows of
+the layout above first; then, if rows must be added, insert them **bottom block upward** — Kết luận
+cuối before Bảng 4, Bảng 4 before Bảng 3 — so the numbers of the blocks not yet touched stay valid.
+Re-read the sheet after inserting rather than trusting the table above, and check that the merged
+ranges and the block titles still sit where they did.
 
-The final `Kết luận phân tích cuối cùng` must answer, in its own rows: đặc điểm thị trường ảnh hưởng
-vận hành, khu vực/site phù hợp, khả năng điện, điểm nghẽn pháp lý, năng lực đối tác, khoảng chi phí,
-rủi ro chính, and `Mức độ sẵn sàng chung` as one of `Sẵn sàng` / `Sẵn sàng có điều kiện` /
-`Chưa sẵn sàng`.
+**Every table carries data and its source.** An empty table is not shipped; a table with nothing
+verified says `Chưa xác minh` in its rows, with what data would close it and who confirms it. Blank
+cells are allowed where nothing is known — generic filler prose is not, and neither is leaving the
+blank's instruction text in place.
+
+The two conclusion blocks are **summaries of rows already filled above**, not new analysis and not a
+verdict — see section 6. There is no `Mức độ sẵn sàng chung` row in this framework and none is to be
+added.
 
 **No way to write an `.xlsx` here** — no local disk, no spreadsheet library — is said plainly, and
 the same filled framework is printed in the chat reply as Markdown tables instead, block by block in
