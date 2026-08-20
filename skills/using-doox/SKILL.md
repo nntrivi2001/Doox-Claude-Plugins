@@ -250,41 +250,11 @@ report printed first cannot be un-shown once the role turns out to be wrong.
 Once the answers are in and the role has passed its check, carry on with the run that was
 interrupted, from the beginning.
 
-**Ask with `doox_form` — one form, all three fields.** The tool ships with this plugin (MCP server
-`doox-forms`) and the harness may expose it under a prefix, e.g. `mcp__doox-forms__doox_form`. It sends
-an MCP elicitation and returns what the user filled in. Call it with `title` set to `Người dùng` and
-these fields, in this order:
+**How to ask — two steps, the same in every harness.** Never a numbered list of questions in prose.
 
-| `name` | `label` | `type` | `hint` |
-|---|---|---|---|
-| `hoTen` | Họ và tên của bạn | `text` | `Nguyễn Văn A` |
-| `email` | Email của bạn | `email` | `ban@example.com` |
-| `vaiTro` | Vai trò / chức vụ của bạn? | `choice` | options `Project Manager`, `Chuyên gia` |
-
-That order is fixed: the role goes last, after the two text fields — not first. **All three go in.**
-`email` is the field dropped most often — a form showing `Họ và tên` and `Vai trò` but no `Email` is
-broken and has to be asked again. Count the fields against the table before sending the call.
-
-Include only what is missing: a README holding the name and email but no role sends `vaiTro` alone.
-
-**Read what the tool returns before using it.** It comes back as JSON: `{"ok": true, "answers": {…}}`,
-or `{"ok": false, "reason": "…"}`.
-
-| Return | Do |
-|---|---|
-| `ok: true` | record the answers, run the role check below |
-| `ok: false`, reason names the missing `elicitation` capability | that harness cannot render a form — fall back to the two steps below |
-| `ok: false`, `decline` or `cancel` | stop; the run needs an identity and did not get one, and nothing is guessed in its place |
-
-**Do not skip `doox_form` on the assumption that a harness has no elicitation.** The returned `reason`
-is the only thing that moves the run onto the two-step fallback.
-
-### Fallback — only when the tool says there is no elicitation
-
-Two steps, never a numbered list of questions in prose.
-
-Step 1 — the role, always through the harness's structured-question tool (`AskUserQuestion` in Claude
-Code). The question is `Vai trò / chức vụ của bạn?`, with exactly two options:
+Step 1 — the role, always through the structured-question tool: `AskUserQuestion` in Claude Code and
+Cowork, whatever the running harness calls its equivalent. The question is `Vai trò / chức vụ của bạn?`,
+with exactly two options:
 
 - `Project Manager`
 - `Chuyên gia`
@@ -302,11 +272,20 @@ Mình cần thêm một số thông tin sau:
 Bạn vui lòng cung cấp thêm các thông tin trên để tiếp tục nhé.
 ```
 
-The split exists because `AskUserQuestion` carries no free-text field: an email asked through it comes
-back as a picked option instead of an address. That is a limit of the fallback, not of `doox_form`.
+**The role goes through the tool and the two names do not.** The tool carries no free-text field, so an
+email asked through it comes back as a picked option instead of an address — that is why step 2 is text
+and why the two steps are not merged into one call. Email is the field dropped most often; a run that
+recorded a name and a role but no email is incomplete and asks again.
 
-In both paths the role is a choice between exactly those two options — do not offer a third and do not
-infer it from anything else.
+The role is a choice between exactly those two options — do not offer a third and do not infer it from
+anything else. Include only what is missing. A README holding the name and email but no role is the
+role question alone; one holding the role but no email is the text question alone, with just the
+missing line.
+
+**Not MCP elicitation.** A skill is markdown and has no tool that sends `elicitation/create`. A bundled
+MCP server can send it, and one was built and tried — Cowork does not declare the `elicitation`
+capability, so no form is rendered there and the server was dropped again. Claude Code CLI does declare
+it. If a real form is ever wanted here, that is the piece to rebuild.
 
 Do not carry on with a partial set. An answer that leaves a field blank is asked again, holding just
 that field.
@@ -362,10 +341,9 @@ the email local part and the name — shared prefix, shared digits, edit distanc
 few, plus the harness's own free-text escape. Only when nothing resembles the user at all does the
 picker fall back to every PIC found in the files.
 
-The question is bare: `PIC của bạn là gì?` — one `doox_form` call, `title` `Người dùng`, a single
-`choice` field named `pic` whose options are the candidates ranked above. `ok: false` on the capability
-falls back to the harness's own picker with the same options plus its free-text escape. Do not explain
-why the automatic match failed, do not
+The question is bare: `PIC của bạn là gì?` — one question, the candidates ranked above as its options,
+plus the harness's free-text escape. Do not explain why the automatic
+match failed, do not
 say the file carries no email or name beside the PIC, do not describe what was searched — that
 narrates the file's structure and tells the user which answer would have worked.
 

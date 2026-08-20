@@ -36,51 +36,37 @@ queries are run.
 
 ### How to ask
 
-**Ask with `doox_form` — one real form, every missing fact in it, asked once.** The tool ships with
-this plugin (MCP server `doox-forms`) and the harness may expose it under a prefix, e.g.
-`mcp__doox-forms__doox_form`. It sends an MCP elicitation and returns what the user filled in. Call it
-with `title` set to `Nghiên cứu thị trường` and these fields, in this order:
+**Ask with the structured-question tool, in one call.** `AskUserQuestion` in Claude Code and Cowork,
+whatever the running harness calls its equivalent. All five facts go in that one call — the harness
+paginates them itself, and that pagination is not a reason to split the call or to drop a fact.
 
-| `name` | `label` | `type` | `options` / `hint` |
-|---|---|---|---|
-| `thiTruong` | Thị trường / khu vực nghiên cứu | `text` | hint `Toronto, Canada` |
-| `mtThamDinh` | Mục tiêu — Thẩm định trước khi đầu tư | `checkbox` | — |
-| `mtChonSite` | Mục tiêu — Chọn site cụ thể | `checkbox` | — |
-| `mtNhaThau` | Mục tiêu — Tìm nhà thầu / NCC | `checkbox` | — |
-| `mtDoiThu` | Mục tiêu — Khảo sát đối thủ và CPO hiện hữu | `checkbox` | — |
-| `mtPhapLy` | Mục tiêu — Tìm hiểu pháp lý và giấy phép | `checkbox` | — |
-| `phamVi` | Phạm vi địa lý | `choice` | `Toàn quốc`, `Một thành phố`, `Một cụm site` |
-| `mocThoiGian` | Mốc thời gian dữ liệu | `choice` | `Từ 2024`, `Từ 2022`, `Từ 2020`, `Không giới hạn` |
-| `doSau` | Độ sâu | `choice` | `Nhanh`, `Sâu` |
-
-**One form, not one question at a time.** A picker that walks the user through `1 of 4` is the bug
-this replaces: every missing fact goes in the single `doox_form` call, and nothing is asked before or
-after it.
+| Question | Type | Options |
+|---|---|---|
+| Thị trường / khu vực nghiên cứu | choice + free-text escape | the markets the prompt hints at, plus the harness's own escape |
+| Mục tiêu nghiên cứu (có thể chọn nhiều) | **`multiSelect`** | `Thẩm định trước khi đầu tư`, `Chọn site cụ thể`, `Tìm nhà thầu / NCC`, `Khảo sát đối thủ và CPO hiện hữu`, `Tìm hiểu pháp lý và giấy phép` |
+| Phạm vi địa lý | choice | `Toàn quốc`, `Một thành phố`, `Một cụm site` |
+| Mốc thời gian dữ liệu | choice | `Từ 2024`, `Từ 2022`, `Từ 2020`, `Không giới hạn` |
+| Độ sâu | choice | `Nhanh`, `Sâu` |
 
 **`Mục tiêu nghiên cứu` takes more than one answer** — thẩm định đầu tư and tìm nhà thầu are commonly
-both true, and forcing one loses scope the research needed. Elicitation schemas hold flat primitives
-and no arrays, which is why the objectives are five `checkbox` fields rather than one multi-select.
-Objectives are the boxes that came back `true`; none ticked is asked again, not proceeded past.
+both true, and forcing one loses scope the research needed. `multiSelect` is on for that question and
+off for the rest. None selected is asked again, not proceeded past.
 
-**Read what the tool returns before using it.** It comes back as JSON: `{"ok": true, "answers": {…}}`,
-or `{"ok": false, "reason": "…"}`.
+**The tool has no free-text field.** `Thị trường` is asked as choices with the harness's escape, never
+as a prose question the user answers in a sentence.
 
-| Return | Do |
-|---|---|
-| `ok: true` | take the answers and start the research |
-| `ok: false`, reason names the missing `elicitation` capability | that harness cannot render a form — ask the same nine fields with its own structured-question tool (`AskUserQuestion`), all in one call, `multiSelect` for the objectives |
-| `ok: false`, `decline` or `cancel` | stop; the research needs a scope and did not get one, and nothing is guessed in its place |
+**Not MCP elicitation.** A skill is markdown and has no tool that sends `elicitation/create`. A bundled
+MCP server can send it, and one was built and tried — Cowork does not declare the `elicitation`
+capability, so no form is rendered there and the server was dropped again. Claude Code CLI does declare
+it. If this skill is ever wanted to use a real form, that is the piece to rebuild, and the harness is
+what decides whether it shows.
 
-**The fallback is what the tool says, not a guess.** Do not skip `doox_form` on the assumption that a
-harness has no elicitation, and do not fall back because a form felt slow — the returned `reason` is
-the only thing that moves the run onto the picker.
+A fact the user already gave in their prompt is **not asked again** — it is left out of the call
+entirely. `Hãy nghiên cứu thị trường Canada - Toronto` already answers the market, so that call carries
+four questions, not five.
 
-A fact the user already gave in their prompt is **not asked again** — its field is left out of the
-call. `Hãy nghiên cứu thị trường Canada - Toronto` already answers the market, so `thiTruong` is
-dropped and the form carries eight fields.
-
-Never a numbered list of questions in prose. This form is not the identity gate of `using-doox` —
-`market-research` runs without that gate — and the two are never merged into one form.
+Never a numbered list of questions in prose. This call is not the identity gate of `using-doox` —
+`market-research` runs without that gate — and the two are never merged.
 
 **Độ sâu mặc định là `nhanh`.** National level, one round, the budgets of section 4 — enough to fill
 the framework with sourced rows, and what `Kenya có triển khai được không` actually needs before a

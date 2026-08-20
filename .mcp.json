@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "doox-forms": {
-      "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/servers/doox-forms.mjs"]
-    }
-  }
-}
