@@ -61,6 +61,8 @@ Never write an untracked factual number or silently fill a gap from model knowle
 
 Priority is driven by the user's objective. Decision-grade claims — anything affecting legal applicability, permit, interconnection, cost, tax, schedule, current licence/certification, site feasibility, contractor selection, or a final conclusion — receive the strongest verification first.
 
+For contractor/vendor claims, **supply-chain role (Cấp 1 trực tiếp thi công vs Cấp 2/Trung gian-Đại lý)** is its own decision-grade claim, separate from licence and project-experience claims. Never infer it from a first-party capability statement alone.
+
 ## 5. Source quality and claim authority
 
 A reputable source is not automatically authoritative for every claim. Verify a claim with the source that has authority or direct knowledge for **that claim**.
@@ -73,6 +75,7 @@ A reputable source is not automatically authoritative for every claim. Verify a 
 | vehicle/equipment specifications | OEM technical material; certification authority for certification status |
 | public charging network | government/open dataset when available; CPO first-party for its own network; credible independent source only when primary data is unavailable |
 | contractor/vendor services and contact | first-party website is valid for self-described capability/contact; licence/certification status requires the issuing registry; project experience is stronger from owner/tender/permit evidence |
+| contractor supply-chain role (Cấp 1/Cấp 2) | first-party self-description alone is never sufficient — registered business-line code (mã ngành, national business-registry portal) plus one independent corroboration (owner/tender/press project reference, or a LinkedIn/social page describing thi công/xây lắp/tổng thầu/EPC); see contractor-tier check below |
 | payment/telecom | regulator and provider first-party terms/coverage |
 | climate, hazards, public safety | meteorological, environmental, emergency/public-safety or municipal authority |
 | costs | official fees/tariffs, published prices, quotations, or transparent industry studies; modelling assumptions must be labelled as assumptions |
@@ -83,6 +86,18 @@ Evidence classes:
 - **B — first-party:** OEM, CPO, contractor, supplier, bank/telco/provider; valid only within its direct self-knowledge.
 - **C — credible independent:** academic/professional institutions, IEA/World Bank-type bodies, reputable journalism/industry associations.
 - **X — discovery only:** SEO pages, aggregators, generic blogs, social posts, forums, directories, AI/listicles. X may identify a lead but never supports a report fact.
+
+**Contractor-tier check** (applies whenever the objective includes contractor/vendor selection): for each candidate contractor, confirm before it counts as a Cấp 1/trực tiếp thi công lead —
+
+- registered business-line code (mã ngành chính) from the national business-registration portal falls in the construction-execution group, not a wholesale/trading/distribution group; record the code, the registry source and the incorporation date;
+- at least one independent corroboration beyond the contractor's own site: an owner/tender/permit/press reference to an executed project, or a LinkedIn/company-social page whose description states thi công/xây lắp/tổng thầu/EPC;
+- negative-signal scan on the website, LinkedIn and any press hit: terms like "đại lý", "nhà phân phối", "ủy quyền", "authorized dealer/distributor", "nhập khẩu và phân phối" without accompanying evidence of self-performed construction work.
+
+A candidate whose registered business line is trading/distribution, or whose only public description is dealer/distributor language, is Cấp 2/Trung gian — report it as such (or exclude it from the "nhà thầu phù hợp" shortlist) rather than listing it as an undifferentiated contractor. If the registry or an independent corroboration cannot be found, mark the role `Chưa xác minh`, not Cấp 1.
+
+If the public description (website, press, LinkedIn) frames the company primarily around an unrelated line of business — real estate trading, general import-export, retail — and construction execution appears only as a minor/secondary mention, treat this the same as a dealer signal: mark `Chưa xác định`, not Cấp 1, even if the mã ngành nominally includes construction.
+
+Longevity/track record is not a hard cutoff, but rank confidence: incorporation ≥3–5 years with the registry date sourced, or a newer entity with at least one independently corroborated executed project, outranks an entity with neither. State which basis applies.
 
 Before using a source, confirm the publisher/domain identity and document provenance; search ranking, branding or a plausible URL is not proof of legitimacy. Every cited URL must have been opened/read in the run, or recovered from a trusted prior evidence ledger that is still within the report's data window.
 
@@ -114,7 +129,7 @@ Preserve source definitions. Do not treat these as synonyms without evidence: `s
 Every search must answer an unresolved claim.
 
 1. **Known authority → go direct.** Search/fetch the regulator, ministry, utility, registry, statistics office, municipality or company site first; use domain-restricted queries when useful.
-2. **Unknown authority → one discovery pass.** Use short local-language/English queries to identify the agency, dataset, document name or official terminology, then move to the primary source. Keep one claim/question per query; avoid multi-topic sentences. Useful patterns are `[metric] [jurisdiction] [year]`, `site:official-domain [metric/document] [year]`, and `site:official-domain filetype:pdf "[official term]"`.
+2. **Unknown authority → one discovery pass.** Use short local-language/English queries to identify the agency, dataset, document name or official terminology, then move to the primary source. Keep one claim/question per query; avoid multi-topic sentences. Useful patterns are `[metric] [jurisdiction] [year]`, `site:official-domain [metric/document] [year]`, and `site:official-domain filetype:pdf "[official term]"`. For a contractor-tier check, use the national business-registry portal for the mã ngành lookup, `"[company]" "thi công" OR "tổng thầu" OR "EPC" -"đại lý" -"phân phối"` for role corroboration, and `site:linkedin.com/company "[company]"` for the social-profile check.
 3. **Read evidence, not snippets.** Open the page/document and extract the exact section carrying the value and its conditions. For long documents, find the relevant article/table/tariff/customer class instead of reading the whole file.
 4. **Extract immediately.** Reduce each useful source to a compact evidence record before moving on.
 5. **Reuse and deduplicate.** Cache by canonical URL + version/date. Fetch a document once and reuse it for every claim it supports.
