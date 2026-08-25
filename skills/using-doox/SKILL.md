@@ -18,6 +18,7 @@ belongs here.
 | `market-research` | the user names a target market and asks to research it, or asks for a market report | a new `.xlsx` built from the saved report framework, filled, every figure sourced |
 | `project-update` | the user reports a change to a task — done, pending, slipped, blocked, deadline moved | the confirmed cells written into the plan files, and a report of what changed. The only skill that writes to a plan file |
 | `project-insights` | the user asks what is stuck or going wrong, asks to summarise/classify issues, asks what finished projects taught, asks how far along a project is, or hands over a plan file with every task done | 4 sections in the chat reply — open issues by work area and issue type, past issues and their patterns, lessons across the archived plans, progress forecast. No mail, ever |
+| `document-review` | the user hands over documents — báo giá, hồ sơ năng lực, tiêu chuẩn, hợp đồng, spec — and asks to dịch, tóm tắt, so sánh, duyệt, chấm, xếp hạng or đề cử | tables in the chat reply — the reading of the documents, or a normalised comparison plus a shortlist. Reads only what the user supplied, never a plan file |
 
 `project-report` reads **one** file and answers "where does this market stand"; `reminder` reads
 **every** file in the project folder and answers "what has to happen today"; `project-insights` reads
@@ -26,6 +27,8 @@ before, and where this ends up"; `project-update` is the only one that **writes*
 cells the user named, after confirming them. Do not use one to approximate the other — a reminder is
 not a shortened progress report, a progress report of one market does not tell a PIC what is due,
 neither of them classifies an issue or forecasts anything, and none of them edits a cell.
+`document-review` sits outside that group entirely: it never opens a plan file, and it works only on
+the documents the user handed over in the session.
 
 ## Plan file naming
 
@@ -238,8 +241,8 @@ is.** No `README.md` at all, a README with no `## Người dùng`, a section wit
 all the same case.
 
 **This is the first step of every run that touches a plan file, and it is a gate.**
-`market-research` is the exception: it reads no plan file and shows nobody's rows, so it runs without
-the gate, for either role. Settle who is running this before
+`market-research` and `document-review` are the exceptions: they read no plan file and show nobody's
+rows, so they run without the gate, for either role. Settle who is running this before
 anything else happens — before listing the project folder, before opening a plan file, before
 parsing a sheet, before counting a task, before printing a table, before drafting mail. Nothing about
 a plan file is read or shown while any of the three facts is missing, and a `Chuyên gia` has no rows
