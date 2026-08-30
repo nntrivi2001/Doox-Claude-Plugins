@@ -12,6 +12,8 @@ Produce a **sourced EV-charging market report in the saved `.xlsx` framework**. 
 Permanent plugin files stay minimal:
 
 - `SKILL.md` — research and verification method.
+- `references/contractor-enumeration.md` — §6 and §12E, read only for a contractor objective.
+- `scripts/wb.py` — workbook inspector and batch writer.
 - `assets/khung-bao-cao-thi-truong.xlsx` — output schema and cell-level requirements.
 
 Do not add permanent claim/source/config files. Claim and evidence ledgers are runtime state only.
@@ -45,6 +47,15 @@ Treat the workbook as the **output contract**:
 - Do not rely on remembered row numbers, merged ranges, or layouts; inspect them before writing. Write a merged range at its top-left anchor cell; writing any other cell of the range fails.
 - Do not insert, delete, renumber, retitle, or reorder framework rows unless the workbook itself explicitly requires repeatable rows or the user asks.
 - The contractor-list sheet (`Bảng 3B - Danh sách nhà thầu` in the bundled asset) **is** a repeatable-row sheet: one row per company, one row per exclusion, plus the coverage block. It ships with blank rows already reserved for both lists — fill those first, and insert further rows only when they run out, taking care not to overwrite the block titles below. Inspect the actual row positions before writing.
+
+Inspect and write with the bundled script, never with ad-hoc spreadsheet code. The report sheet declares about 22,000 cells and fills under 300 of them; an unguarded row loop prints thousands of empty rows and can cost more than the entire research run.
+
+```bash
+python scripts/wb.py inspect <file.xlsx> [--sheet "NAME"] [--max-chars N]   # non-empty cells + merged ranges
+python scripts/wb.py write   <file.xlsx> cells.json                          # {"sheet": {"B7": "value"}}
+```
+
+Inspect one sheet at a time — the sheet whose block is being written now — rather than the whole workbook. `write` validates the whole batch first: an unknown sheet or a non-anchor merged cell fails the batch and writes nothing, so a rejection costs one error line instead of a corrupted file. Batch each report block into a single `write` call.
 
 ## 4. Atomic claims: research only what the workbook needs
 
@@ -95,90 +106,9 @@ When a secondary source cites an original dataset/order/law, follow the citation
 
 ## 6. Contractor enumeration and tier classification
 
-Applies whenever the objective includes contractor selection. Everything here is decision-grade.
+**When the objective includes contractor selection, read `references/contractor-enumeration.md` before starting the candidate list, and follow it.** It carries the target profile and role taxonomy (§6.1), the frame-first enumeration frames F1–F10 (§6.2), mã ngành reading (§6.3), turnkey evidence (§6.4), credibility scoring (§6.5), the saturation stop rule and separate budget (§6.6), and audit E (§12E). Everything in it is decision-grade, and the rest of this file cites its subsection numbers directly.
 
-### 6.1 Target profile — say what "Cấp 1" means in this run
-
-Default target: **tổng thầu turnkey (EPC/EC)** — one company that self-performs construction and carries the whole scope: thiết kế, vật tư/thiết bị, thi công xây dựng và điện, xin phép, thử nghiệm/nghiệm thu, bàn giao. Only a user statement changes this.
-
-Classify every candidate into exactly one role:
-
-| Role | Meaning | Counts for the shortlist |
-|---|---|---|
-| `Tổng thầu turnkey` | self-performs construction **and** carries end-to-end scope incl. design, materials/equipment, permits, commissioning | yes — this is the target |
-| `Cấp 1 chuyên ngành` | self-performs, but only a trade slice (điện, xây dựng, đấu nối) under someone else's design/permit | secondary — usable as a package member, not as tổng thầu |
-| `Trung gian / Đại lý (Cấp 2)` | sells/distributes equipment or subcontracts the work out; no self-performed construction evidence | no — list with reason, never in the shortlist |
-| `Chưa xác định` | registry or independent corroboration not found | no — name what is missing |
-
-A tổng thầu turnkey buying equipment through a distributor is normal. Distribution wording, an import/wholesale secondary mã ngành, or a brand-dealer page is **not** disqualifying on its own when the primary mã ngành is construction-execution and self-performance is independently evidenced. Only the absence of self-performance evidence disqualifies.
-
-### 6.2 Enumeration is frame-first, never search-first
-
-A generic web search ranks intermediaries first — they buy the SEO that contractors do not need. Generic search is **class X: it may produce a lead, never a role classification, and never the shape of the list.**
-
-Work the frames below in order; each returns candidate names that go into the ledger keyed by **mã số thuế (MST)**. Legal name, trade name and website are attributes of an MST, not separate candidates.
-
-| # | Frame | What it yields | Class |
-|---|---|---|---|
-| F1 | Hệ thống mạng đấu thầu quốc gia (`muasamcong.mpi.gov.vn`) — kết quả lựa chọn nhà thầu; filter gói `EC/EPC`, "thiết kế và thi công", "chìa khóa trao tay", trạm sạc/điện/hạ tầng | winning contractor names + chủ đầu tư + scope + value + year — the strongest single frame | A |
-| F2 | Chứng chỉ năng lực hoạt động xây dựng (`nangluchdxd.gov.vn` / Bộ Xây dựng, Sở Xây dựng tỉnh) — search by field and địa bàn | registry-listed firms with hạng I/II/III, field and validity. A pure trading company cannot hold one | A |
-| F3 | Công ty điện lực tỉnh / EVN — danh sách đơn vị đủ điều kiện thi công đường dây và trạm biến áp | firms already accepted for grid-side work — decisive for trạm sạc | A |
-| F4 | Cổng thông tin quốc gia về đăng ký doanh nghiệp (`dangkykinhdoanh.gov.vn`) — by mã ngành (§6.3) + địa bàn | legal name, MST, mã ngành chính, ngày cấp | A |
-| F5 | Sở Xây dựng / Sở Công Thương tỉnh — công bố năng lực nhà thầu, giấy phép xây dựng đã cấp | local firms and the projects they were permitted for | A |
-| F6 | Project-reverse: named EV/charging or comparable projects → who executed them (chủ đầu tư release, BQL khu công nghiệp, press) | firms with real delivered scope, often invisible to search | A/C |
-| F7 | Snowball: subcontractors and consortium members named inside F1/F6 results; contractors used by competing CPOs | second-ring firms — the main source of list completeness | A/C |
-| F8 | Adjacent-trade transfer: nhà thầu điện / trạm biến áp / hạ tầng viễn thông / cơ điện M&E with no EV project yet | capable candidates the market has not labelled "trạm sạc" | A/C |
-| F9 | Hiệp hội (VACC, hội nhà thầu / hội điện lực địa phương) — danh sách hội viên | membership frame | C |
-| F10 | Brand pages: "hệ thống đại lý ủy quyền" / "nhà phân phối" of charger OEMs | used **inversely** — to recognise Cấp 2 candidates and to know which firms only resell | B |
-
-Skipping a frame is allowed only when it demonstrably does not exist for the jurisdiction; record that as a coverage note, not silence.
-
-### 6.3 Mã ngành (VSIC) reading
-
-Primary code in the construction-execution group is a positive signal: `4321` lắp đặt hệ thống điện, `4299`, `4290`, `4222`, `4212`, `4211`, `4100`, `4311`, `4312`, `4329`, `4330`. `7110` (kiến trúc, tư vấn kỹ thuật) is design/consulting — supportive of turnkey scope when combined with an execution code, never a substitute for one. `4610`, `4649`, `4659`, `4759`, `4791` are wholesale/retail — as the **primary** code with no execution code and no self-performance evidence, that is a Cấp 2 signal.
-
-Record code, code description, registry URL and ngày cấp. Never classify a role from mã ngành alone.
-
-### 6.4 Turnkey evidence
-
-`Tổng thầu turnkey` requires at least one independent (non-first-party) item:
-
-- a won EC/EPC/"thiết kế và thi công"/"chìa khóa trao tay" package in F1;
-- chứng chỉ năng lực covering **both** thiết kế and thi công in the relevant field (F2);
-- an owner/press/permit project reference that describes an end-to-end scope delivered by the firm.
-
-First-party hồ sơ năng lực listing permits and commissioning is class B — it supports the claim but cannot establish it alone. Without an independent item, the role is `Cấp 1 chuyên ngành` (if self-performance is evidenced) or `Chưa xác định`, never turnkey.
-
-### 6.5 Credibility scoring
-
-Score every candidate; record the evidence for each line or write `Chưa xác minh` and what is missing. Never score from absence.
-
-| Criterion | Required evidence | Points |
-|---|---|---|
-| Chứng chỉ năng lực hạng I / II / III | registry entry: số, lĩnh vực, hiệu lực | 3 / 2 / 1 |
-| Delivered project | tender result or chủ đầu tư/permit record = 3; independent press = 2; self-published only = 1 | 3 / 2 / 1 |
-| Longevity from ngày cấp ĐKKD | ≥5 years / 3–5 / <3 | 2 / 1 / 0 |
-| Independent press naming a project | article with project name and date | 1 |
-| Website and LinkedIn/social both describe thi công / xây lắp / tổng thầu / EPC | pages read in this run | 1 |
-| Primary mã ngành in the execution group | code + registry source | 2 |
-
-Grouping: **Nhóm A** ≥8 points **and** ≥1 independently sourced delivered project **and** role = `Tổng thầu turnkey`; **Nhóm B** 5–7, or ≥8 without the turnkey evidence; **Nhóm C** <5 or `Chưa xác định`. Longevity is a ranking input, not a cutoff: a young firm with an independently corroborated delivered project outranks an old firm with none — state which basis applies.
-
-If the public description frames the company primarily around an unrelated line of business (real estate trading, general import-export, retail) and construction appears only as a secondary mention, cap the role at `Chưa xác định` regardless of mã ngành, and say so.
-
-### 6.6 Completeness, budget and stop rule
-
-"Đầy đủ" is a measurable claim, so measure it:
-
-- one row per MST; merge duplicates across frames instead of listing them twice;
-- every excluded candidate keeps a row in the exclusion ledger: MST, name, reason, source. Silent dropping is a coverage failure;
-- record, per frame: searched yes/no, new MSTs produced;
-- **stop rule: saturation** — two consecutive frames produce no new MST, and F1–F5 have all been worked. Not "3–5 found". The workbook's 3–5 minimum is a floor for the summary row, never a target for the list;
-- state residual blind spots (firms with no web presence, unpublished tender results, provinces not covered).
-
-This enumeration runs on its **own budget, separate from the §7 report quota**, because registry pages are cheap to open and the report quota would otherwise cap the list at the first few SEO results: roughly 15–25 searches and 8–12 opened documents in `nhanh`, 35–60 searches and 20–30 documents in `sâu`. §7's "stop when sufficient" does not override the saturation rule.
-
-Dispatch frames to parallel workers by default — one worker per frame, non-overlapping, returning candidate rows (MST, name, role evidence, source URL, date) and never raw document text.
+Do not attempt contractor work from the summary above: a generic web search ranks intermediaries first, so a list built without the frames is a list of resellers.
 
 ## 7. Freshness, scope and meaning
 
@@ -207,11 +137,21 @@ Every search must answer an unresolved claim.
 
 1. **Known authority → go direct.** Search/fetch the regulator, ministry, utility, registry, statistics office, municipality or company site first; use domain-restricted queries when useful.
 2. **Unknown authority → one discovery pass.** Use short local-language/English queries to identify the agency, dataset, document name or official terminology, then move to the primary source. Keep one claim/question per query; avoid multi-topic sentences. Useful patterns are `[metric] [jurisdiction] [year]`, `site:official-domain [metric/document] [year]`, and `site:official-domain filetype:pdf "[official term]"`. Contractor work uses the §6 frames, not these patterns; within a frame, useful queries are `site:muasamcong.mpi.gov.vn "[EPC | thiết kế và thi công | chìa khóa trao tay]" "[lĩnh vực]" [tỉnh]`, `"chứng chỉ năng lực hoạt động xây dựng" "[lĩnh vực]" [tỉnh]`, `"[chủ đầu tư | dự án]" "nhà thầu thi công"`, `"[company]" "thi công" OR "tổng thầu" OR "EPC"` for role corroboration, and `site:linkedin.com/company "[company]"` for the social-profile check. Do not use `-"đại lý" -"phân phối"` as an exclusion — it hides firms that both build and distribute (§6.1).
-3. **Read evidence, not snippets.** Open the page/document and extract the exact section carrying the value and its conditions. For long documents, find the relevant article/table/tariff/customer class instead of reading the whole file.
-4. **Extract immediately.** Reduce each useful source to a compact evidence record before moving on.
-5. **Reuse and deduplicate.** Cache by canonical URL + version/date. Fetch a document once and reuse it for every claim it supports.
-6. **Stop when sufficient.** A low-risk claim directly answered by the correct authoritative source needs no decorative extra searches. This does not apply to contractor enumeration, which stops on the §6.6 saturation rule instead.
-7. **Target gaps only.** After the first pass, re-search only unresolved, stale, contradictory, semantically ambiguous, or under-verified decision-grade claims. Do not rerun a whole batch.
+3. **Triage the result list before opening anything.** A search result list is cheap; a fetch is not. Never open a document to find out whether it is relevant. From the titles, domains and snippets alone, build a candidate line per URL — `URL | publisher identity | evidence class (§5) | claim(s) it could close | date/period signal` — then drop, without fetching:
+
+   - class **X** (SEO pages, aggregators, listicles, directories, forums, AI summaries) — a lead only, never opened as evidence;
+   - a source whose class is wrong for the claim's authority (§5 table), when a correct-authority candidate is present in the same list;
+   - duplicates: same origin document, same publisher's mirror, or a secondary that visibly quotes an origin already in the list — keep the origin, drop the rest;
+   - a snippet already showing the wrong geography, period, customer class or unit;
+   - anything answering a claim already closed in the ledger.
+
+   Then rank the survivors by class → directness → recency, and keep only what the claim needs: **one** document for a low-risk claim, **two independent** for a decision-grade claim. Everything else stays unopened in the ledger as an unused lead. If the gate leaves nothing usable, refine the query once rather than opening a weak source; a second empty gate is a named gap, not a third search.
+
+4. **Read evidence, not snippets.** Open only the documents that passed the gate, and extract the exact section carrying the value and its conditions. For long documents, find the relevant article/table/tariff/customer class instead of reading the whole file.
+5. **Extract immediately.** Reduce each useful source to a compact evidence record before moving on.
+6. **Reuse and deduplicate.** Cache by canonical URL + version/date. Fetch a document once and reuse it for every claim it supports.
+7. **Stop when sufficient.** A low-risk claim directly answered by the correct authoritative source needs no decorative extra searches. This does not apply to contractor enumeration, which stops on the §6.6 saturation rule instead.
+8. **Target gaps only.** After the first pass, re-search only unresolved, stale, contradictory, semantically ambiguous, or under-verified decision-grade claims. Do not rerun a whole batch.
 
 Verification strength:
 
@@ -223,7 +163,11 @@ Quota is a ceiling, never a target. As a guide for a full report, aim to stay ar
 
 **Opened documents are the real cost, not searches.** A search result list is small; a fetched page or PDF is one to two orders of magnitude larger and it stays in context for the rest of the run. Aim to open around 10–14 documents in `nhanh` and 24–32 in `sâu`, and extract the needed section rather than carrying the document forward. If either ceiling is reached, finish the workbook with explicit gaps instead of starting another broad round.
 
-**Dispatch document-heavy batches to parallel workers whenever they are available** — this is the main defence against context growth, because a worker pays for the document once and returns only the evidence record. Give each worker non-overlapping authority/domain boundaries, the claims that batch must close, and the seen-source set; require structured evidence records back, never raw document text. In `sâu` this is the default rather than an optimisation. Only run sequentially when workers are unavailable, with the same extract-and-drop discipline.
+**Dispatch only what survives the step-3 gate, and dispatch it to workers.** The gate decides *whether* a document is worth opening; the worker decides *who pays* for opening it. Both are needed: dispatching an unfiltered result list just moves the waste, and gating without dispatching still leaves every opened document sitting in the main context for the rest of the run.
+
+Send a worker a fixed list of gate-approved URLs plus the claims that batch must close — never an open-ended "research this topic" brief, which reopens the gate inside the worker where you cannot see it. Give each worker non-overlapping authority/domain boundaries and the seen-source set; require structured evidence records back, never raw document text. If a worker finds its assigned documents insufficient, it returns the shortfall and the leads it saw; the gate is re-run in the main thread before any follow-up dispatch.
+
+Batch of one or two short pages: open it inline. Three or more, or any long PDF: dispatch. In `sâu` dispatch is the default. When workers are unavailable, run sequentially with the same gate and the same extract-and-drop discipline.
 
 ## 9. Runtime evidence record
 
@@ -320,17 +264,7 @@ Fix the claim or expose the limitation before delivery.
 
 ### E. Contractor-list audit
 
-Only when the objective includes contractor selection:
-
-- F1–F5 were all worked or explicitly recorded as unavailable, and the saturation rule was met or the shortfall is stated;
-- every listed company has an MST, a mã ngành with registry source, a role, and the evidence behind its role and score — no row scored from absence;
-- no company appears twice under different names;
-- every excluded candidate is in the exclusion ledger with a reason and source;
-- no `Tổng thầu turnkey` rests on first-party evidence alone (§6.4);
-- no candidate was dropped only for dealer/distribution wording (§6.1);
-- the shortlist is drawn from Nhóm A, or the shortfall and the reason are stated.
-
-Running out of budget is not a reason to skip this section — it is short by design. It is a reason to ship the workbook with named gaps.
+Only when the objective includes contractor selection. Run audit E as written in `references/contractor-enumeration.md`. It is short by design — running out of budget is a reason to ship the workbook with named gaps, never a reason to skip it.
 
 ## 13. Completion and reply
 
@@ -348,4 +282,4 @@ The report is complete only when:
 
 “100% processed” means every required claim is verified, estimated with evidence, positively not applicable, or explicitly unresolved. It does **not** mean public information exists for every project-specific fact.
 
-In the final reply state: output file, mode (`nhanh`/`sâu`), data-lock date, approximate searches and documents opened, unique evidence sources, decision-grade claims still `Chưa xác minh`, and whether all final audit gates passed. For a contractor objective also state: frames worked, companies listed, how many are `Tổng thầu turnkey`, how many in Nhóm A, whether saturation was reached, and the residual blind spots. Offer follow-up work only when the user asks or when it directly closes a named gap already present in the report.
+In the final reply state: output file, mode (`nhanh`/`sâu`), data-lock date, approximate searches, candidates gated out versus documents actually opened, unique evidence sources, decision-grade claims still `Chưa xác minh`, and whether all final audit gates passed. For a contractor objective also state: frames worked, companies listed, how many are `Tổng thầu turnkey`, how many in Nhóm A, whether saturation was reached, and the residual blind spots. Offer follow-up work only when the user asks or when it directly closes a named gap already present in the report.
